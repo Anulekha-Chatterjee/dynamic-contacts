@@ -1,0 +1,17 @@
+{
+  "columns": [
+    { "id": "contact", "component": "contact", "width": "28%", "visible": true },
+    { "id": "conversations", "component": "conversations", "width": "44%", "visible": true },
+    { "id": "notes", "component": "notes", "width": "28%", "visible": true }
+  ],
+  "utilitySidebar": {
+    "visible": true,
+    "icons": [
+      { "id": "clock", "label": "Activity", "icon": "clock" },
+      { "id": "network", "label": "Network", "icon": "network" },
+      { "id": "tasks", "label": "Tasks", "icon": "check-square" },
+      { "id": "docs", "label": "Documents", "icon": "file-text" },
+      { "id": "calendar", "label": "Calendar", "icon": "calendar" }
+    ]
+  }
+}

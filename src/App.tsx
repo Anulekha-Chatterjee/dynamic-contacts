@@ -1,0 +1,8 @@
+import { PageLayout } from './components/layout/PageLayout';
+import './App.css';
+
+function App() {
+  return <PageLayout />;
+}
+
+export default App;

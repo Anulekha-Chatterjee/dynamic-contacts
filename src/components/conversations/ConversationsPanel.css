@@ -1,0 +1,204 @@
+.conversations-panel__header {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.conversations-panel__title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.conversations-panel__feed {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.email-card {
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.email-card__subject {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: #f9fafb;
+  font-weight: 600;
+  font-size: 13px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.email-card__subject button {
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+.email-card__meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px;
+  flex-wrap: wrap;
+}
+
+.email-card__meta img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.email-card__sender {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 120px;
+}
+
+.email-card__sender strong {
+  font-size: 13px;
+}
+
+.email-card__sender span {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.email-card__time {
+  font-size: 11px;
+  color: var(--color-text-muted);
+}
+
+.email-card__actions {
+  display: flex;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.email-card__actions button {
+  color: var(--color-text-muted);
+  padding: 4px;
+}
+
+.email-card__body {
+  padding: 0 14px 12px;
+  font-size: 13px;
+  line-height: 1.55;
+  color: #374151;
+}
+
+.email-card__body p {
+  margin: 0 0 8px;
+}
+
+.email-card__link {
+  display: inline-block;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
+.email-card__reply {
+  margin: 0 14px 14px;
+  padding: 8px 20px;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.email-card__reply:hover {
+  background: var(--color-primary-hover);
+}
+
+.chat-bubble {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  max-width: 280px;
+}
+
+.chat-bubble__icon {
+  font-size: 16px;
+}
+
+.chat-bubble__content {
+  background: #f3f4f6;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.chat-bubble__sender {
+  font-weight: 600;
+}
+
+.chat-bubble__time {
+  display: block;
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+.conversations-panel__composer {
+  padding: 12px 20px 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+.typing-indicator {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+
+.composer-box {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  background: #fafafa;
+}
+
+.composer-box__channel {
+  font-size: 18px;
+  padding: 4px;
+  color: var(--color-text-muted);
+}
+
+.composer-box textarea {
+  flex: 1;
+  border: none;
+  background: transparent;
+  resize: none;
+  outline: none;
+  line-height: 1.4;
+}
+
+.composer-box__tools {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.composer-box__tools button {
+  color: var(--color-text-muted);
+  padding: 6px;
+}
+
+.composer-box__send {
+  color: var(--color-primary) !important;
+}

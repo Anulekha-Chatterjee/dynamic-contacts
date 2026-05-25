@@ -1,0 +1,21 @@
+{
+  "title": "Notes",
+  "notes": [
+    {
+      "id": "n1",
+      "content": "Olivia called to confirm her appointment for next Tuesday. She prefers morning slots between 9–11 AM.",
+      "timestamp": "2 hours ago"
+    },
+    {
+      "id": "n2",
+      "content": "Discussed financing options. Mentioned ",
+      "mentions": [{ "text": "@Aaron Site", "userId": "aaron" }],
+      "timestamp": "Yesterday"
+    },
+    {
+      "id": "n3",
+      "content": "Follow up on the test drive feedback. Customer interested in the 2022 Camry Hybrid — send comparison sheet.",
+      "timestamp": "3 days ago"
+    }
+  ]
+}

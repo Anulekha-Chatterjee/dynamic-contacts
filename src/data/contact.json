@@ -1,0 +1,29 @@
+{
+  "pagination": { "current": 1, "total": 356 },
+  "profile": {
+    "firstName": "Olivia",
+    "lastName": "John",
+    "avatarUrl": "https://i.pravatar.cc/150?u=olivia-john",
+    "phoneAction": { "enabled": true }
+  },
+  "owner": {
+    "name": "Devon Lane",
+    "avatarUrl": "https://i.pravatar.cc/150?u=devon-lane"
+  },
+  "followers": [
+    { "id": "f1", "avatarUrl": "https://i.pravatar.cc/150?u=follower1" },
+    { "id": "f2", "avatarUrl": "https://i.pravatar.cc/150?u=follower2" },
+    { "id": "f3", "avatarUrl": "https://i.pravatar.cc/150?u=follower3" }
+  ],
+  "tags": [
+    { "id": "t1", "label": "Shared Contact", "removable": true },
+    { "id": "t2", "label": "VIP", "removable": true }
+  ],
+  "moreTagsCount": 15,
+  "actionTabs": [
+    { "id": "all", "label": "All Fields", "active": true },
+    { "id": "dnd", "label": "DND" },
+    { "id": "actions", "label": "Actions" }
+  ],
+  "fieldsSearch": { "placeholder": "Search Fields and Folders" }
+}

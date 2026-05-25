@@ -1,0 +1,51 @@
+.crm-page {
+  display: flex;
+  min-height: 100vh;
+  padding: 16px;
+  gap: 0;
+}
+
+.crm-page__grid {
+  flex: 1;
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.panel {
+  background: var(--color-surface);
+  border-radius: var(--radius-panel);
+  box-shadow: var(--shadow-panel);
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 32px);
+  overflow: hidden;
+}
+
+.utility-sidebar {
+  width: 48px;
+  margin-left: 8px;
+  background: var(--color-utility-bg);
+  border-radius: var(--radius-panel);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 0;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.utility-sidebar button {
+  color: var(--color-utility-icon);
+  padding: 8px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s, background 0.15s;
+}
+
+.utility-sidebar button:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
