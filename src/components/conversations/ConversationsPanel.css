@@ -51,13 +51,6 @@
   flex-wrap: wrap;
 }
 
-.email-card__meta img {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
 .email-card__sender {
   display: flex;
   flex-direction: column;

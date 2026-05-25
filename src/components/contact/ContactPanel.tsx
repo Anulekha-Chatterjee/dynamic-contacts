@@ -1,8 +1,19 @@
 import { useMemo, useState } from 'react';
 import type { ContactConfig, FieldsConfig } from '../../types/config';
+import { resolveFieldFolders } from '../../utils/resolveFields';
+import { AvatarInitials } from '../common/AvatarInitials';
 import { IconBack, IconChevron, IconFilter, IconPhone, IconSearch } from '../icons/Icons';
 import { FieldFolder } from './FieldFolder';
 import './ContactPanel.css';
+
+const PAGINATION = { current: 1, total: 356 };
+const ACTION_TABS = [
+  { id: 'all', label: 'All Fields', active: true },
+  { id: 'dnd', label: 'DND' },
+  { id: 'actions', label: 'Actions' },
+] as const;
+const FIELDS_SEARCH_PLACEHOLDER = 'Search Fields and Folders';
+const MORE_TAGS_COUNT = 15;
 
 interface ContactPanelProps {
   contact: ContactConfig;
@@ -10,24 +21,29 @@ interface ContactPanelProps {
 }
 
 export function ContactPanel({ contact, fields }: ContactPanelProps) {
-  const [activeTab, setActiveTab] = useState(
-    contact.actionTabs.find((t) => t.active)?.id ?? contact.actionTabs[0]?.id,
-  );
+  const [activeTab, setActiveTab] = useState<string>(ACTION_TABS[0].id);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const fullName = `${contact.profile.firstName} ${contact.profile.lastName}`;
+  const fullName = `${contact.firstName} ${contact.lastName}`;
+
+  const resolvedFolders = useMemo(
+    () => resolveFieldFolders(fields, contact),
+    [fields, contact],
+  );
 
   const visibleFolders = useMemo(() => {
-    if (!searchQuery.trim()) return fields.folders;
+    if (!searchQuery.trim()) return resolvedFolders;
     const q = searchQuery.toLowerCase();
-    return fields.folders.filter(
+    return resolvedFolders.filter(
       (folder) =>
         folder.label.toLowerCase().includes(q) ||
         folder.fields.some(
-          (f) => f.label.toLowerCase().includes(q) || f.value.toLowerCase().includes(q),
+          (f) =>
+            f.label.toLowerCase().includes(q) ||
+            (f.value ?? '').toLowerCase().includes(q),
         ),
     );
-  }, [fields.folders, searchQuery]);
+  }, [resolvedFolders, searchQuery]);
 
   return (
     <aside className="panel contact-panel">
@@ -38,7 +54,7 @@ export function ContactPanel({ contact, fields }: ContactPanelProps) {
         </button>
         <div className="contact-panel__pagination">
           <span>
-            {contact.pagination.current} of {contact.pagination.total}
+            {PAGINATION.current} of {PAGINATION.total}
           </span>
           <button type="button" aria-label="Previous contact">
             ‹
@@ -50,10 +66,10 @@ export function ContactPanel({ contact, fields }: ContactPanelProps) {
       </header>
 
       <div className="contact-panel__profile">
-        <img src={contact.profile.avatarUrl} alt="" className="contact-panel__avatar" />
+        <AvatarInitials name={fullName} size="lg" className="contact-panel__avatar" />
         <div className="contact-panel__name-row">
           <h1 className="contact-panel__name">{fullName}</h1>
-          {contact.profile.phoneAction.enabled && (
+          {contact.phone && (
             <button type="button" className="contact-panel__call" aria-label="Call contact">
               <IconPhone />
             </button>
@@ -65,15 +81,20 @@ export function ContactPanel({ contact, fields }: ContactPanelProps) {
         <div className="meta-row">
           <span className="meta-row__label">Owner</span>
           <div className="meta-row__value">
-            <img src={contact.owner.avatarUrl} alt="" />
-            <span>{contact.owner.name}</span>
+            <AvatarInitials name={contact.owner} size="sm" />
+            <span>{contact.owner}</span>
           </div>
         </div>
         <div className="meta-row">
           <span className="meta-row__label">Followers</span>
           <div className="meta-row__value meta-row__followers">
-            {contact.followers.map((f) => (
-              <img key={f.id} src={f.avatarUrl} alt="" className="follower-avatar" />
+            {contact.followers.map((follower) => (
+              <AvatarInitials
+                key={follower}
+                name={follower}
+                size="md"
+                className="follower-avatar"
+              />
             ))}
             <IconChevron size={14} />
           </div>
@@ -82,14 +103,14 @@ export function ContactPanel({ contact, fields }: ContactPanelProps) {
           <span className="meta-row__label">Tags</span>
           <div className="meta-row__tags">
             {contact.tags.map((tag) => (
-              <span key={tag.id} className="tag">
-                {tag.label}
-                {tag.removable && <button type="button" aria-label={`Remove ${tag.label}`}>×</button>}
+              <span key={tag} className="tag">
+                {tag}
+                <button type="button" aria-label={`Remove ${tag}`}>
+                  ×
+                </button>
               </span>
             ))}
-            {contact.moreTagsCount != null && (
-              <span className="tag tag--more">+{contact.moreTagsCount}</span>
-            )}
+            <span className="tag tag--more">+{MORE_TAGS_COUNT}</span>
             <button type="button" className="tag-add" aria-label="Add tag">
               +
             </button>
@@ -98,7 +119,7 @@ export function ContactPanel({ contact, fields }: ContactPanelProps) {
       </div>
 
       <div className="contact-panel__tabs">
-        {contact.actionTabs.map((tab) => (
+        {ACTION_TABS.map((tab) => (
           <button
             key={tab.id}
             type="button"
@@ -114,7 +135,7 @@ export function ContactPanel({ contact, fields }: ContactPanelProps) {
         <IconSearch className="search-icon" />
         <input
           type="search"
-          placeholder={contact.fieldsSearch.placeholder}
+          placeholder={FIELDS_SEARCH_PLACEHOLDER}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />

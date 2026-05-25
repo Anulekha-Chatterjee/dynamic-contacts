@@ -14,12 +14,12 @@ export function FieldRow({ field }: FieldRowProps) {
         {field.type === 'phone' && field.countryCode === 'US' && (
           <FlagUS className="field-row__flag" />
         )}
-        {field.type === 'email' ? (
+        {field.type === 'email' && field.value ? (
           <a href={`mailto:${field.value}`} className="field-row__link">
             {field.value}
           </a>
         ) : (
-          <span>{field.value}</span>
+          <span>{field.value ?? '—'}</span>
         )}
       </div>
     </div>

@@ -35,8 +35,8 @@ src/
 | JSON file | Purpose |
 |-----------|---------|
 | `layout.json` | Column widths, which panels appear, utility sidebar icons |
-| `contact.json` | Profile, owner, followers, tags, action tabs, search placeholder |
-| `fields.json` | Collapsible folders and field definitions (type-aware: phone, email, etc.) |
+| `contact.json` | Flat contact record (field values, owner, followers, tags) |
+| `fields.json` | Folder layout and field schema; values resolved from `contact.json` by `key` |
 | `notes.json` | Note cards with optional @mentions |
 | `conversations.json` | Email threads and chat bubbles (middle column) |
 
@@ -52,10 +52,12 @@ Add a new folder in `src/data/fields.json`:
   "label": "Custom Fields",
   "defaultExpanded": true,
   "fields": [
-    { "key": "leadSource", "label": "Lead Source", "value": "Website", "type": "text" }
+    { "key": "leadSource", "label": "Lead Source", "type": "text" }
   ]
 }
 ```
+
+Then add `"leadSource": "Website"` to `contact.json`.
 
 Hide the notes column in `src/data/layout.json`:
 

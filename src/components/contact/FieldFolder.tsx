@@ -14,7 +14,8 @@ function folderMatchesSearch(folder: FieldFolderType, query: string): boolean {
   const q = query.toLowerCase();
   if (folder.label.toLowerCase().includes(q)) return true;
   return folder.fields.some(
-    (f) => f.label.toLowerCase().includes(q) || f.value.toLowerCase().includes(q),
+    (f) =>
+      f.label.toLowerCase().includes(q) || (f.value ?? '').toLowerCase().includes(q),
   );
 }
 
@@ -27,7 +28,7 @@ export function FieldFolder({ folder, searchQuery }: FieldFolderProps) {
     ? folder.fields.filter(
         (f) =>
           f.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          f.value.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (f.value ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
           folder.label.toLowerCase().includes(searchQuery.toLowerCase()),
       )
     : folder.fields;

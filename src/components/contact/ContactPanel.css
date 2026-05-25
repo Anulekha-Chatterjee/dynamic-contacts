@@ -45,10 +45,7 @@
 }
 
 .contact-panel__avatar {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  object-fit: cover;
+  flex-shrink: 0;
 }
 
 .contact-panel__name-row {
@@ -103,16 +100,7 @@
   font-size: 13px;
 }
 
-.meta-row__value img {
-  width: 24px;
-  height: 24px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
 .meta-row__followers .follower-avatar {
-  width: 28px;
-  height: 28px;
   margin-left: -8px;
   border: 2px solid var(--color-surface);
 }

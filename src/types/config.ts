@@ -15,34 +15,27 @@ export interface PageLayoutConfig {
   };
 }
 
-export interface ContactTag {
-  id: string;
-  label: string;
-  removable?: boolean;
-}
-
 export interface ContactConfig {
-  pagination: { current: number; total: number };
-  profile: {
-    firstName: string;
-    lastName: string;
-    avatarUrl: string;
-    phoneAction: { enabled: boolean };
-  };
-  owner: { name: string; avatarUrl: string };
-  followers: Array<{ id: string; avatarUrl: string }>;
-  tags: ContactTag[];
-  moreTagsCount?: number;
-  actionTabs: Array<{ id: string; label: string; active?: boolean }>;
-  fieldsSearch: { placeholder: string };
+  firstName: string;
+  lastName: string;
+  phone: string;
+  email: string;
+  address: string;
+  businessName: string;
+  streetAddress: string;
+  city: string;
+  country: string;
+  owner: string;
+  followers: string[];
+  tags: string[];
 }
 
 export interface FieldDefinition {
   key: string;
   label: string;
-  value: string;
   type: FieldType;
   countryCode?: string;
+  value?: string;
 }
 
 export interface FieldFolder {
@@ -77,7 +70,7 @@ export interface ConversationEmail {
   id: string;
   type: 'email';
   subject: string;
-  sender: { name: string; avatarUrl: string };
+  sender: { name: string };
   recipient: string;
   timestamp: string;
   body: string;

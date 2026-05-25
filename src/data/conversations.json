@@ -5,10 +5,7 @@
       "id": "e1",
       "type": "email",
       "subject": "Set up a new time to follow up on your vehicle inquiry",
-      "sender": {
-        "name": "Olivia John",
-        "avatarUrl": "https://i.pravatar.cc/150?u=olivia-john"
-      },
+      "sender": { "name": "Olivia John" },
       "recipient": "To: Me",
       "timestamp": "5 min ago",
       "body": "Hi there,\n\nThank you for reaching out! I'd like to schedule a follow-up call to discuss the options we reviewed. Please let me know what times work best for you this week.\n\nAlso, could you send over the latest pricing sheet?",
@@ -19,10 +16,7 @@
       "id": "e2",
       "type": "email",
       "subject": "Re: Vehicle inspection report",
-      "sender": {
-        "name": "Olivia John",
-        "avatarUrl": "https://i.pravatar.cc/150?u=olivia-john"
-      },
+      "sender": { "name": "Olivia John" },
       "recipient": "To: Me",
       "timestamp": "2 hours ago",
       "body": "Thanks for sending the inspection report. Everything looks good. I'll discuss with my partner and get back to you by end of day.",

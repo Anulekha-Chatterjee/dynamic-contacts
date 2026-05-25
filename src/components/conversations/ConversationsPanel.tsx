@@ -1,4 +1,5 @@
 import type { ConversationItem, ConversationsConfig } from '../../types/config';
+import { AvatarInitials } from '../common/AvatarInitials';
 import {
   IconChevron,
   IconMore,
@@ -22,7 +23,7 @@ function EmailItem({ item }: { item: Extract<ConversationItem, { type: 'email' }
         <button type="button" aria-label="Expand">⤢</button>
       </div>
       <div className="email-card__meta">
-        <img src={item.sender.avatarUrl} alt="" />
+        <AvatarInitials name={item.sender.name} size="xl" />
         <div className="email-card__sender">
           <strong>{item.sender.name}</strong>
           <span>{item.recipient}</span>
