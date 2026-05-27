@@ -37,7 +37,6 @@ export function ContactPanel({ contacts, contactFields, onBackClick }: ContactPa
   const [expandedTagContactIds, setExpandedTagContactIds] = useState<Set<string>>(
     () => new Set(),
   );
-
   const contact = editableContacts[contactIndex];
   const fullName = contact ? getContactDisplayName(contact) : '';
   const phone = contact ? getContactPhone(contact) : '';
@@ -189,7 +188,7 @@ export function ContactPanel({ contacts, contactFields, onBackClick }: ContactPa
             <div className="contact-panel__name-row">
               <h1 className="contact-panel__name">{fullName}</h1>
               {phone && (
-                <button type="button" className="contact-panel__call" aria-label="Call contact">
+                <button type="button" className="contact-panel__call" aria-label="Call contact" onClick={() => window.location.href = `tel:${phone}`}>
                   <IconPhone />
                 </button>
               )}

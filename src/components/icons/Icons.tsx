@@ -95,6 +95,50 @@ export function IconSend({ size = 18, className }: IconProps) {
   );
 }
 
+export function IconConversation({ size = 18, className }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+      <path
+        d="M7 6C5.34315 6 4 7.34315 4 9V13C4 14.6569 5.34315 16 7 16H8V19L11.5 16H13C14.6569 16 16 14.6569 16 13V9C16 7.34315 14.6569 6 13 6H7Z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M16 9H17C18.6569 9 20 10.3431 20 12V15C20 16.6569 18.6569 18 17 18H16V21L12.5 18"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
+export function IconMail({ size = 18, className }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
+      <rect
+        x="3"
+        y="5"
+        width="18"
+        height="14"
+        rx="2"
+        stroke="currentColor"
+        strokeWidth="2"
+      />
+      <path
+        d="M4 7l8 6 8-6"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function IconPaperclip({ size = 18, className }: IconProps) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" className={className}>
@@ -169,3 +213,5 @@ export function FlagUS({ className }: { className?: string }) {
     </span>
   );
 }
+
+

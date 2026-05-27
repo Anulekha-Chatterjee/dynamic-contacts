@@ -1,14 +1,7 @@
 import { useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 import type { ConversationItem, ConversationsConfig } from '../../types/config';
 import { AvatarInitials } from '../common/AvatarInitials';
-import {
-  IconChevron,
-  IconMore,
-  IconPaperclip,
-  IconSend,
-  IconSmile,
-  IconStar,
-} from '../icons/Icons';
+import { IconChevron, IconConversation, IconMail, IconMore, IconSend, IconStar } from '../icons/Icons';
 import './ConversationsPanel.css';
 
 interface ConversationsPanelProps {
@@ -138,6 +131,7 @@ export function ConversationsPanel({ config }: ConversationsPanelProps) {
           onClick={toggleMobilePanel}
           aria-expanded={!mobileCollapsed}
         >
+          <IconConversation />
           {config.title}
           <IconChevron className={mobileCollapsed ? '' : 'expanded'} />
         </button>
@@ -167,24 +161,21 @@ export function ConversationsPanel({ config }: ConversationsPanelProps) {
         )}
         <form className="composer-box" onSubmit={handleSubmitMessage}>
           <button type="button" className="composer-box__channel" aria-label="Message type">
-            ✉
+            <IconMail size={16} />
           </button>
           <textarea
             ref={composerRef}
             placeholder={
               replyTarget ? `Reply to ${replyTarget.sender.name}...` : config.composer.placeholder
             }
-            rows={2}
+            rows={1}
             value={message}
             onChange={(event) => setMessage(event.target.value)}
             onKeyDown={handleComposerKeyDown}
           />
           <div className="composer-box__tools">
-            <button type="button" aria-label="Attach">
-              <IconPaperclip />
-            </button>
-            <button type="button" aria-label="Emoji">
-              <IconSmile />
+            <button type="button" className="composer-box__sparkle" aria-label="AI assist">
+              ✨
             </button>
             <button
               type="submit"
