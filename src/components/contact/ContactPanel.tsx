@@ -1,34 +1,40 @@
 import { useMemo, useState } from 'react';
-import type { ContactConfig, FieldsConfig } from '../../types/config';
-import { resolveFieldFolders } from '../../utils/resolveFields';
+import type { ContactFieldsConfig, ContactRecord } from '../../types/config';
+import {
+  getContactDisplayName,
+  getContactPhone,
+  resolveFieldFolders,
+} from '../../utils/resolveFields';
 import { AvatarInitials } from '../common/AvatarInitials';
 import { IconBack, IconChevron, IconFilter, IconPhone, IconSearch } from '../icons/Icons';
 import { FieldFolder } from './FieldFolder';
 import './ContactPanel.css';
 
-const PAGINATION = { current: 1, total: 356 };
 const ACTION_TABS = [
-  { id: 'all', label: 'All Fields', active: true },
+  { id: 'all', label: 'All Fields' },
   { id: 'dnd', label: 'DND' },
   { id: 'actions', label: 'Actions' },
 ] as const;
-const FIELDS_SEARCH_PLACEHOLDER = 'Search Fields and Folders';
 const MORE_TAGS_COUNT = 15;
 
 interface ContactPanelProps {
-  contact: ContactConfig;
-  fields: FieldsConfig;
+  contacts: ContactRecord[];
+  contactFields: ContactFieldsConfig;
+  onBackClick: () => void;
 }
 
-export function ContactPanel({ contact, fields }: ContactPanelProps) {
+export function ContactPanel({ contacts, contactFields, onBackClick }: ContactPanelProps) {
+  const [contactIndex, setContactIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<string>(ACTION_TABS[0].id);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const fullName = `${contact.firstName} ${contact.lastName}`;
+  const contact = contacts[contactIndex];
+  const fullName = contact ? getContactDisplayName(contact) : '';
+  const phone = contact ? getContactPhone(contact) : '';
 
   const resolvedFolders = useMemo(
-    () => resolveFieldFolders(fields, contact),
-    [fields, contact],
+    () => (contact ? resolveFieldFolders(contactFields, contact) : []),
+    [contactFields, contact],
   );
 
   const visibleFolders = useMemo(() => {
@@ -40,26 +46,75 @@ export function ContactPanel({ contact, fields }: ContactPanelProps) {
         folder.fields.some(
           (f) =>
             f.label.toLowerCase().includes(q) ||
-            (f.value ?? '').toLowerCase().includes(q),
+            f.displayValue.toLowerCase().includes(q),
         ),
     );
   }, [resolvedFolders, searchQuery]);
 
+  const searchPlaceholder =
+    contactFields.searchPlaceholder ?? 'Search Fields and Folders';
+
+  function goToPrevious() {
+    setContactIndex((i) => Math.max(0, i - 1));
+  }
+
+  function goToNext() {
+    setContactIndex((i) => Math.min(contacts.length - 1, i + 1));
+  }
+
+  if (!contact) {
+    return (
+      <aside className="panel contact-panel">
+        <header className="contact-panel__top">
+          <button
+            type="button"
+            className="contact-panel__back"
+            onClick={onBackClick}
+            aria-label="Hide contact details"
+          >
+            <IconBack />
+            <span>Contact Details</span>
+          </button>
+        </header>
+        <div className="contact-panel__scroll">
+          <p className="contact-panel__empty">No contacts available.</p>
+        </div>
+      </aside>
+    );
+  }
+
   return (
     <aside className="panel contact-panel">
+      <div className="contact-panel__scroll">
       <header className="contact-panel__top">
-        <button type="button" className="contact-panel__back" aria-label="Go back">
+        <button
+          type="button"
+          className="contact-panel__back"
+          onClick={onBackClick}
+          aria-label="Hide contact details"
+          aria-expanded={true}
+        >
           <IconBack />
           <span>Contact Details</span>
         </button>
         <div className="contact-panel__pagination">
           <span>
-            {PAGINATION.current} of {PAGINATION.total}
+            {contactIndex + 1} of {contacts.length}
           </span>
-          <button type="button" aria-label="Previous contact">
+          <button
+            type="button"
+            aria-label="Previous contact"
+            onClick={goToPrevious}
+            disabled={contactIndex === 0}
+          >
             ‹
           </button>
-          <button type="button" aria-label="Next contact">
+          <button
+            type="button"
+            aria-label="Next contact"
+            onClick={goToNext}
+            disabled={contactIndex === contacts.length - 1}
+          >
             ›
           </button>
         </div>
@@ -69,7 +124,7 @@ export function ContactPanel({ contact, fields }: ContactPanelProps) {
         <AvatarInitials name={fullName} size="lg" className="contact-panel__avatar" />
         <div className="contact-panel__name-row">
           <h1 className="contact-panel__name">{fullName}</h1>
-          {contact.phone && (
+          {phone && (
             <button type="button" className="contact-panel__call" aria-label="Call contact">
               <IconPhone />
             </button>
@@ -135,7 +190,7 @@ export function ContactPanel({ contact, fields }: ContactPanelProps) {
         <IconSearch className="search-icon" />
         <input
           type="search"
-          placeholder={FIELDS_SEARCH_PLACEHOLDER}
+          placeholder={searchPlaceholder}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />
@@ -148,6 +203,7 @@ export function ContactPanel({ contact, fields }: ContactPanelProps) {
         {visibleFolders.map((folder) => (
           <FieldFolder key={folder.id} folder={folder} searchQuery={searchQuery} />
         ))}
+      </div>
       </div>
     </aside>
   );

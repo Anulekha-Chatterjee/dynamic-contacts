@@ -1,0 +1,91 @@
+{
+  "contacts": [
+    {
+      "id": "contact-olivia-john",
+      "owner": "Devon Lane",
+      "followers": ["A", "B"],
+      "tags": ["Shared Contact", "VIP"],
+      "values": {
+        "firstName": "Olivia",
+        "lastName": "John",
+        "phone": "(555) 123-4567",
+        "email": "olivia.perry@example.com",
+        "address": "123 Maple Street, Springfield, IL 62704. USA.",
+        "businessName": "ABC Corp",
+        "streetAddress": "123 Main Street",
+        "city": "Springfield",
+        "country": "United States",
+        "website": "https://abccorp.example.com",
+        "budget": "$15,000 – $25,000",
+        "preferredMake": ["Toyota", "Honda"],
+        "bodyStyle": ["SUV", "Sedan"],
+        "testDriveDate": "2026-06-12"
+      }
+    },
+    {
+      "id": "contact-marcus-lee",
+      "owner": "Sarah Chen",
+      "followers": ["SC", "MK"],
+      "tags": ["Lead", "Hot"],
+      "values": {
+        "firstName": "Marcus",
+        "lastName": "Lee",
+        "phone": "(555) 987-6543",
+        "email": "marcus.lee@example.com",
+        "address": "88 Harbor Blvd, San Diego, CA 92101. USA.",
+        "businessName": "Lee Motors LLC",
+        "streetAddress": "88 Harbor Blvd",
+        "city": "San Diego",
+        "country": "United States",
+        "website": "https://leemotors.example.com",
+        "budget": "$25,000 – $40,000",
+        "preferredMake": ["BMW", "Tesla"],
+        "bodyStyle": ["Sedan", "Coupe"],
+        "testDriveDate": "2026-06-18"
+      }
+    },
+    {
+      "id": "contact-priya-sharma",
+      "owner": "Devon Lane",
+      "followers": ["DL"],
+      "tags": ["VIP", "Referral"],
+      "values": {
+        "firstName": "Priya",
+        "lastName": "Sharma",
+        "phone": "(555) 222-8899",
+        "email": "priya.sharma@example.com",
+        "address": "400 Lakeview Dr, Austin, TX 78701. USA.",
+        "businessName": "Sharma Consulting",
+        "streetAddress": "400 Lakeview Dr",
+        "city": "Austin",
+        "country": "United States",
+        "website": "https://sharmaconsulting.example.com",
+        "budget": "Over $40k",
+        "preferredMake": ["Tesla"],
+        "bodyStyle": ["SUV"],
+        "testDriveDate": "2026-07-02"
+      }
+    },
+    {
+      "id": "contact-james-wright",
+      "owner": "Mike Torres",
+      "followers": ["MT", "JW", "AL"],
+      "tags": ["Shared Contact"],
+      "values": {
+        "firstName": "James",
+        "lastName": "Wright",
+        "phone": "(555) 441-0022",
+        "email": "james.wright@example.com",
+        "address": "15 Pine Ridge Rd, Denver, CO 80202. USA.",
+        "businessName": "Wright Family Auto",
+        "streetAddress": "15 Pine Ridge Rd",
+        "city": "Denver",
+        "country": "United States",
+        "budget": "Under $15k",
+        "preferredMake": ["Ford", "Honda"],
+        "bodyStyle": ["Truck", "SUV"],
+        "testDriveDate": "2026-05-30"
+      }
+    }
+  ]
+}

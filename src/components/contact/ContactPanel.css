@@ -1,5 +1,14 @@
-.contact-panel {
+.panel.contact-panel {
+  min-height: 0;
+  overflow: hidden;
+}
+
+.contact-panel__scroll {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 .contact-panel__top {
@@ -17,6 +26,14 @@
   color: var(--color-text);
   font-weight: 600;
   font-size: 14px;
+  border-radius: var(--radius-sm);
+  padding: 4px 6px;
+  margin: -4px -6px;
+  transition: background 0.15s;
+}
+
+.contact-panel__back:hover {
+  background: #f3f4f6;
 }
 
 .contact-panel__pagination {
@@ -209,7 +226,6 @@
 
 .contact-panel__folders {
   padding: 0 16px 24px;
-  flex: 1;
 }
 
 .field-folder {
@@ -298,4 +314,30 @@
 
 .field-row__link {
   color: var(--color-primary);
+}
+
+.field-row__required {
+  color: #dc2626;
+  margin-left: 2px;
+}
+
+.field-row__multiline {
+  white-space: pre-wrap;
+}
+
+.field-row__help {
+  display: block;
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+.contact-panel__empty {
+  padding: 24px 16px;
+  color: var(--color-text-muted);
+}
+
+.contact-panel__pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }

@@ -1,4 +1,9 @@
+.notes-panel {
+  min-height: 0;
+}
+
 .notes-panel__header {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -39,11 +44,14 @@
 
 .notes-panel__list {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 16px;
   display: flex;
   flex-direction: column;
   gap: 12px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .note-card {

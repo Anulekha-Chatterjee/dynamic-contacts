@@ -3,6 +3,7 @@ import './NotesPanel.css';
 
 interface NotesPanelProps {
   config: NotesConfig;
+  onCloseClick: () => void;
 }
 
 function NoteContent({ note }: { note: Note }) {
@@ -29,7 +30,7 @@ function NoteContent({ note }: { note: Note }) {
   );
 }
 
-export function NotesPanel({ config }: NotesPanelProps) {
+export function NotesPanel({ config, onCloseClick }: NotesPanelProps) {
   return (
     <aside className="panel notes-panel">
       <header className="notes-panel__header">
@@ -38,7 +39,12 @@ export function NotesPanel({ config }: NotesPanelProps) {
           <button type="button" className="btn-add">
             + Add
           </button>
-          <button type="button" className="btn-close" aria-label="Close notes">
+          <button
+            type="button"
+            className="btn-close"
+            onClick={onCloseClick}
+            aria-label="Hide notes"
+          >
             ×
           </button>
         </div>

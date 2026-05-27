@@ -1,4 +1,16 @@
-export type FieldType = 'text' | 'email' | 'phone' | 'address' | 'country';
+export type ContactFieldType =
+  | 'short_text'
+  | 'long_text'
+  | 'email'
+  | 'phone'
+  | 'url'
+  | 'number'
+  | 'date'
+  | 'single_select'
+  | 'multi_select'
+  | 'country';
+
+export type ContactFieldValue = string | string[];
 
 export interface LayoutColumn {
   id: string;
@@ -15,38 +27,50 @@ export interface PageLayoutConfig {
   };
 }
 
-export interface ContactConfig {
-  firstName: string;
-  lastName: string;
-  phone: string;
-  email: string;
-  address: string;
-  businessName: string;
-  streetAddress: string;
-  city: string;
-  country: string;
+export interface ContactRecord {
+  id: string;
   owner: string;
   followers: string[];
   tags: string[];
+  values: Record<string, ContactFieldValue>;
 }
 
-export interface FieldDefinition {
+export interface ContactDataConfig {
+  contacts: ContactRecord[];
+}
+
+export interface ContactFieldSchema {
+  id: string;
   key: string;
   label: string;
-  type: FieldType;
+  type: ContactFieldType;
+  required?: boolean;
+  placeholder?: string;
+  helpText?: string;
+  options?: string[];
   countryCode?: string;
-  value?: string;
 }
 
-export interface FieldFolder {
+export interface ContactFieldFolder {
   id: string;
   label: string;
-  defaultExpanded: boolean;
-  fields: FieldDefinition[];
+  defaultExpanded?: boolean;
+  fields: ContactFieldSchema[];
 }
 
-export interface FieldsConfig {
-  folders: FieldFolder[];
+export interface ContactFieldsConfig {
+  version?: number;
+  searchPlaceholder?: string;
+  folders: ContactFieldFolder[];
+}
+
+export interface ResolvedContactField extends ContactFieldSchema {
+  rawValue?: ContactFieldValue;
+  displayValue: string;
+}
+
+export interface ResolvedContactFieldFolder extends Omit<ContactFieldFolder, 'fields'> {
+  fields: ResolvedContactField[];
 }
 
 export interface NoteMention {

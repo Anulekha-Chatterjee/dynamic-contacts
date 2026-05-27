@@ -1,4 +1,9 @@
+.conversations-panel {
+  min-height: 0;
+}
+
 .conversations-panel__header {
+  flex-shrink: 0;
   padding: 14px 20px;
   border-bottom: 1px solid var(--color-border);
 }
@@ -14,11 +19,14 @@
 
 .conversations-panel__feed {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  overflow-x: hidden;
   padding: 16px 20px;
   display: flex;
   flex-direction: column;
   gap: 16px;
+  -webkit-overflow-scrolling: touch;
 }
 
 .email-card {
@@ -145,6 +153,7 @@
 }
 
 .conversations-panel__composer {
+  flex-shrink: 0;
   padding: 12px 20px 16px;
   border-top: 1px solid var(--color-border);
 }

@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "searchPlaceholder": "Search Fields and Folders",
+  "folders": [
+    {
+      "id": "contact",
+      "label": "Contact",
+      "defaultExpanded": true,
+      "fields": [
+        {
+          "id": "fld-first-name",
+          "key": "firstName",
+          "label": "First Name",
+          "type": "short_text",
+          "required": true
+        },
+        {
+          "id": "fld-last-name",
+          "key": "lastName",
+          "label": "Last Name",
+          "type": "short_text",
+          "required": true
+        },
+        {
+          "id": "fld-phone",
+          "key": "phone",
+          "label": "Phone Number",
+          "type": "phone",
+          "countryCode": "US"
+        },
+        {
+          "id": "fld-email",
+          "key": "email",
+          "label": "Email",
+          "type": "email"
+        },
+        {
+          "id": "fld-address",
+          "key": "address",
+          "label": "Address",
+          "type": "long_text"
+        }
+      ]
+    },
+    {
+      "id": "additional-info",
+      "label": "Additional Info",
+      "defaultExpanded": true,
+      "fields": [
+        {
+          "id": "fld-business",
+          "key": "businessName",
+          "label": "Business Name",
+          "type": "short_text"
+        },
+        {
+          "id": "fld-street",
+          "key": "streetAddress",
+          "label": "Street Address",
+          "type": "short_text"
+        },
+        {
+          "id": "fld-city",
+          "key": "city",
+          "label": "City",
+          "type": "short_text"
+        },
+        {
+          "id": "fld-country",
+          "key": "country",
+          "label": "Country",
+          "type": "country"
+        },
+        {
+          "id": "fld-website",
+          "key": "website",
+          "label": "Website",
+          "type": "url"
+        }
+      ]
+    },
+    {
+      "id": "car-preferences",
+      "label": "Used Car Buyer Preferences",
+      "defaultExpanded": false,
+      "fields": [
+        {
+          "id": "fld-budget",
+          "key": "budget",
+          "label": "Budget Range",
+          "type": "single_select",
+          "options": ["Under $15k", "$15,000 – $25,000", "$25,000 – $40,000", "Over $40k"]
+        },
+        {
+          "id": "fld-make",
+          "key": "preferredMake",
+          "label": "Preferred Make",
+          "type": "multi_select",
+          "options": ["Toyota", "Honda", "Ford", "BMW", "Tesla"]
+        },
+        {
+          "id": "fld-body",
+          "key": "bodyStyle",
+          "label": "Body Style",
+          "type": "multi_select",
+          "options": ["SUV", "Sedan", "Truck", "Hatchback", "Coupe"]
+        },
+        {
+          "id": "fld-test-drive",
+          "key": "testDriveDate",
+          "label": "Preferred Test Drive",
+          "type": "date"
+        }
+      ]
+    }
+  ]
+}

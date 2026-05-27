@@ -1,26 +1,26 @@
 import { useState } from 'react';
-import type { FieldFolder as FieldFolderType } from '../../types/config';
+import type { ResolvedContactFieldFolder } from '../../types/config';
 import { IconChevron } from '../icons/Icons';
 import { FieldRow } from './FieldRow';
 import './ContactPanel.css';
 
 interface FieldFolderProps {
-  folder: FieldFolderType;
+  folder: ResolvedContactFieldFolder;
   searchQuery: string;
 }
 
-function folderMatchesSearch(folder: FieldFolderType, query: string): boolean {
+function folderMatchesSearch(folder: ResolvedContactFieldFolder, query: string): boolean {
   if (!query) return true;
   const q = query.toLowerCase();
   if (folder.label.toLowerCase().includes(q)) return true;
   return folder.fields.some(
     (f) =>
-      f.label.toLowerCase().includes(q) || (f.value ?? '').toLowerCase().includes(q),
+      f.label.toLowerCase().includes(q) || f.displayValue.toLowerCase().includes(q),
   );
 }
 
 export function FieldFolder({ folder, searchQuery }: FieldFolderProps) {
-  const [expanded, setExpanded] = useState(folder.defaultExpanded);
+  const [expanded, setExpanded] = useState(folder.defaultExpanded ?? true);
 
   if (!folderMatchesSearch(folder, searchQuery)) return null;
 
@@ -28,7 +28,7 @@ export function FieldFolder({ folder, searchQuery }: FieldFolderProps) {
     ? folder.fields.filter(
         (f) =>
           f.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (f.value ?? '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+          f.displayValue.toLowerCase().includes(searchQuery.toLowerCase()) ||
           folder.label.toLowerCase().includes(searchQuery.toLowerCase()),
       )
     : folder.fields;
@@ -56,7 +56,7 @@ export function FieldFolder({ folder, searchQuery }: FieldFolderProps) {
       {expanded && (
         <div className="field-folder__body">
           {visibleFields.map((field) => (
-            <FieldRow key={field.key} field={field} />
+            <FieldRow key={field.id} field={field} />
           ))}
         </div>
       )}

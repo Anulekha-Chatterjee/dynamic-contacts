@@ -17,8 +17,8 @@ Open [http://localhost:5173](http://localhost:5173).
 src/
 ├── data/           # JSON configuration (edit these to change the UI)
 │   ├── layout.json
-│   ├── contact.json
-│   ├── fields.json
+│   ├── contactFields.json
+│   ├── contactData.json
 │   ├── notes.json
 │   └── conversations.json
 ├── types/          # TypeScript contracts for all config shapes
@@ -34,30 +34,29 @@ src/
 
 | JSON file | Purpose |
 |-----------|---------|
-| `layout.json` | Column widths, which panels appear, utility sidebar icons |
-| `contact.json` | Flat contact record (field values, owner, followers, tags) |
-| `fields.json` | Folder layout and field schema; values resolved from `contact.json` by `key` |
+| `layout.json` | Column widths (%), which panels appear, utility sidebar icons (converted to `fr` at runtime) |
+| `contactFields.json` | Form-style field schema (folders, keys, labels, types, options) |
+| `contactData.json` | Contact records (`values` keyed by field `key`, plus owner/followers/tags) |
 | `notes.json` | Note cards with optional @mentions |
 | `conversations.json` | Email threads and chat bubbles (middle column) |
 
-`PageLayout` reads `layout.json` and maps each column's `component` key to the correct panel. `FieldFolder` and `FieldRow` render entirely from `fields.json`—add a folder or field in JSON and it appears without code changes.
+`PageLayout` reads `layout.json` and maps each column's `component` key to the correct panel. `FieldFolder` and `FieldRow` render from `contactFields.json` + values from `contactData.json`—add a field in JSON and it appears without code changes.
 
 ### Customization example
 
-Add a new folder in `src/data/fields.json`:
+Add a field in `src/data/contactFields.json`:
 
 ```json
 {
-  "id": "custom",
-  "label": "Custom Fields",
-  "defaultExpanded": true,
-  "fields": [
-    { "key": "leadSource", "label": "Lead Source", "type": "text" }
-  ]
+  "id": "fld-lead-source",
+  "key": "leadSource",
+  "label": "Lead Source",
+  "type": "single_select",
+  "options": ["Website", "Referral", "Walk-in"]
 }
 ```
 
-Then add `"leadSource": "Website"` to `contact.json`.
+Then add `"leadSource": "Website"` to each contact's `values` in `contactData.json`.
 
 Hide the notes column in `src/data/layout.json`:
 

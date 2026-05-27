@@ -1,20 +1,20 @@
 import layoutConfig from '../data/layout.json';
-import contactConfig from '../data/contact.json';
-import fieldsConfig from '../data/fields.json';
+import contactDataConfig from '../data/contactData.json';
+import contactFieldsConfig from '../data/contactFields.json';
 import notesConfig from '../data/notes.json';
 import conversationsConfig from '../data/conversations.json';
 import type {
-  ContactConfig,
+  ContactDataConfig,
+  ContactFieldsConfig,
   ConversationsConfig,
-  FieldsConfig,
   NotesConfig,
   PageLayoutConfig,
 } from '../types/config';
 
 export const config = {
   layout: layoutConfig as PageLayoutConfig,
-  contact: contactConfig as ContactConfig,
-  fields: fieldsConfig as FieldsConfig,
+  contactData: contactDataConfig as ContactDataConfig,
+  contactFields: contactFieldsConfig as ContactFieldsConfig,
   notes: notesConfig as NotesConfig,
   conversations: conversationsConfig as ConversationsConfig,
 };

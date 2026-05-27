@@ -1,21 +1,54 @@
+import { useMemo, useState } from 'react';
 import { config } from '../../config/loadConfig';
 import type { LayoutColumn } from '../../types/config';
+import { buildGridTemplateColumns } from '../../utils/buildGridTemplateColumns';
 import { ContactPanel } from '../contact/ContactPanel';
 import { ConversationsPanel } from '../conversations/ConversationsPanel';
 import { NotesPanel } from '../notes/NotesPanel';
+import { PanelReopenStrip } from './PanelReopenStrip';
 import { UtilitySidebar } from './UtilitySidebar';
 import './PageLayout.css';
 
-function renderColumn(column: LayoutColumn) {
-  if (!column.visible) return null;
+interface PanelVisibility {
+  contactPanelOpen: boolean;
+  notesPanelOpen: boolean;
+}
+
+function isColumnVisible(column: LayoutColumn, panels: PanelVisibility): boolean {
+  if (!column.visible) return false;
+  if (column.component === 'contact' && !panels.contactPanelOpen) return false;
+  if (column.component === 'notes' && !panels.notesPanelOpen) return false;
+  return true;
+}
+
+function renderColumn(
+  column: LayoutColumn,
+  panels: PanelVisibility,
+  onContactPanelBack: () => void,
+  onNotesPanelClose: () => void,
+) {
+  if (!isColumnVisible(column, panels)) return null;
 
   switch (column.component) {
     case 'contact':
-      return <ContactPanel key={column.id} contact={config.contact} fields={config.fields} />;
+      return (
+        <ContactPanel
+          key={column.id}
+          contacts={config.contactData.contacts}
+          contactFields={config.contactFields}
+          onBackClick={onContactPanelBack}
+        />
+      );
     case 'conversations':
       return <ConversationsPanel key={column.id} config={config.conversations} />;
     case 'notes':
-      return <NotesPanel key={column.id} config={config.notes} />;
+      return (
+        <NotesPanel
+          key={column.id}
+          config={config.notes}
+          onCloseClick={onNotesPanelClose}
+        />
+      );
     default:
       return null;
   }
@@ -23,20 +56,46 @@ function renderColumn(column: LayoutColumn) {
 
 export function PageLayout() {
   const { layout } = config;
+  const [contactPanelOpen, setContactPanelOpen] = useState(true);
+  const [notesPanelOpen, setNotesPanelOpen] = useState(true);
+
+  const panelVisibility: PanelVisibility = { contactPanelOpen, notesPanelOpen };
+
+  const visibleColumns = useMemo(
+    () => layout.columns.filter((c) => isColumnVisible(c, panelVisibility)),
+    [layout.columns, contactPanelOpen, notesPanelOpen],
+  );
+
+  const gridTemplateColumns = useMemo(
+    () => buildGridTemplateColumns(visibleColumns),
+    [visibleColumns],
+  );
+
+  function toggleContactPanel() {
+    setContactPanelOpen((open) => !open);
+  }
+
+  function toggleNotesPanel() {
+    setNotesPanelOpen((open) => !open);
+  }
 
   return (
     <div className="crm-page">
-      <div
-        className="crm-page__grid"
-        style={{
-          gridTemplateColumns: layout.columns
-            .filter((c) => c.visible)
-            .map((c) => c.width)
-            .join(' '),
-        }}
-      >
-        {layout.columns.map((column) => renderColumn(column))}
+      {!contactPanelOpen && (
+        <PanelReopenStrip
+          label="Contact Details"
+          side="start"
+          onClick={toggleContactPanel}
+        />
+      )}
+      <div className="crm-page__grid" style={{ gridTemplateColumns }}>
+        {layout.columns.map((column) =>
+          renderColumn(column, panelVisibility, toggleContactPanel, toggleNotesPanel),
+        )}
       </div>
+      {!notesPanelOpen && (
+        <PanelReopenStrip label={config.notes.title} side="end" onClick={toggleNotesPanel} />
+      )}
       <UtilitySidebar config={layout.utilitySidebar} />
     </div>
   );
