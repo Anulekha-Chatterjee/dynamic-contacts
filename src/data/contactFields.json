@@ -6,6 +6,12 @@
       "id": "contact",
       "label": "Contact",
       "defaultExpanded": true,
+      "actions": {
+        "addField": {
+          "enabled": true,
+          "label": "+ Add"
+        }
+      },
       "fields": [
         {
           "id": "fld-first-name",
@@ -46,6 +52,12 @@
       "id": "additional-info",
       "label": "Additional Info",
       "defaultExpanded": true,
+      "actions": {
+        "addField": {
+          "enabled": true,
+          "label": "+ Add"
+        }
+      },
       "fields": [
         {
           "id": "fld-business",
@@ -83,6 +95,12 @@
       "id": "car-preferences",
       "label": "Used Car Buyer Preferences",
       "defaultExpanded": false,
+      "actions": {
+        "addField": {
+          "enabled": true,
+          "label": "+ Add"
+        }
+      },
       "fields": [
         {
           "id": "fld-budget",

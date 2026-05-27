@@ -1,5 +1,10 @@
 import { useMemo, useState } from 'react';
-import type { ContactFieldsConfig, ContactRecord } from '../../types/config';
+import type {
+  ContactFieldsConfig,
+  ContactFieldValue,
+  ContactRecord,
+  ResolvedContactField,
+} from '../../types/config';
 import {
   getContactDisplayName,
   getContactPhone,
@@ -15,7 +20,7 @@ const ACTION_TABS = [
   { id: 'dnd', label: 'DND' },
   { id: 'actions', label: 'Actions' },
 ] as const;
-const MORE_TAGS_COUNT = 15;
+const VISIBLE_TAGS_COUNT = 2;
 
 interface ContactPanelProps {
   contacts: ContactRecord[];
@@ -24,13 +29,25 @@ interface ContactPanelProps {
 }
 
 export function ContactPanel({ contacts, contactFields, onBackClick }: ContactPanelProps) {
+  const [editableContacts, setEditableContacts] = useState(contacts);
   const [contactIndex, setContactIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<string>(ACTION_TABS[0].id);
   const [searchQuery, setSearchQuery] = useState('');
+  const [mobileCollapsed, setMobileCollapsed] = useState(false);
+  const [expandedTagContactIds, setExpandedTagContactIds] = useState<Set<string>>(
+    () => new Set(),
+  );
 
-  const contact = contacts[contactIndex];
+  const contact = editableContacts[contactIndex];
   const fullName = contact ? getContactDisplayName(contact) : '';
   const phone = contact ? getContactPhone(contact) : '';
+  const tagsExpanded = contact ? expandedTagContactIds.has(contact.id) : false;
+  const visibleTags = contact
+    ? tagsExpanded
+      ? contact.tags
+      : contact.tags.slice(0, VISIBLE_TAGS_COUNT)
+    : [];
+  const hiddenTagsCount = contact ? Math.max(contact.tags.length - VISIBLE_TAGS_COUNT, 0) : 0;
 
   const resolvedFolders = useMemo(
     () => (contact ? resolveFieldFolders(contactFields, contact) : []),
@@ -59,7 +76,48 @@ export function ContactPanel({ contacts, contactFields, onBackClick }: ContactPa
   }
 
   function goToNext() {
-    setContactIndex((i) => Math.min(contacts.length - 1, i + 1));
+    setContactIndex((i) => Math.min(editableContacts.length - 1, i + 1));
+  }
+
+  function updateContactField(field: ResolvedContactField, value: ContactFieldValue) {
+    if (!contact) return;
+
+    setEditableContacts((currentContacts) =>
+      currentContacts.map((currentContact) =>
+        currentContact.id === contact.id
+          ? {
+              ...currentContact,
+              values: {
+                ...currentContact.values,
+                [field.key]: value,
+              },
+            }
+          : currentContact,
+      ),
+    );
+  }
+
+  function handlePanelToggle() {
+    if (window.matchMedia('(max-width: 1024px)').matches) {
+      setMobileCollapsed((collapsed) => !collapsed);
+      return;
+    }
+
+    onBackClick();
+  }
+
+  function toggleTags(contactId: string) {
+    setExpandedTagContactIds((currentIds) => {
+      const nextIds = new Set(currentIds);
+
+      if (nextIds.has(contactId)) {
+        nextIds.delete(contactId);
+      } else {
+        nextIds.add(contactId);
+      }
+
+      return nextIds;
+    });
   }
 
   if (!contact) {
@@ -84,126 +142,147 @@ export function ContactPanel({ contacts, contactFields, onBackClick }: ContactPa
   }
 
   return (
-    <aside className="panel contact-panel">
+    <aside className={`panel contact-panel ${mobileCollapsed ? 'panel--mobile-collapsed' : ''}`}>
       <div className="contact-panel__scroll">
-      <header className="contact-panel__top">
-        <button
-          type="button"
-          className="contact-panel__back"
-          onClick={onBackClick}
-          aria-label="Hide contact details"
-          aria-expanded={true}
-        >
-          <IconBack />
-          <span>Contact Details</span>
-        </button>
-        <div className="contact-panel__pagination">
-          <span>
-            {contactIndex + 1} of {contacts.length}
-          </span>
+        <header className="contact-panel__top">
           <button
             type="button"
-            aria-label="Previous contact"
-            onClick={goToPrevious}
-            disabled={contactIndex === 0}
+            className="contact-panel__back"
+            onClick={handlePanelToggle}
+            aria-label="Toggle contact details"
+            aria-expanded={!mobileCollapsed}
           >
-            ‹
+            <IconBack className="contact-panel__desktop-back-icon" />
+            <span>Contact Details</span>
+            <IconChevron
+              className={`contact-panel__mobile-toggle-icon ${
+                mobileCollapsed ? '' : 'expanded'
+              }`}
+            />
           </button>
-          <button
-            type="button"
-            aria-label="Next contact"
-            onClick={goToNext}
-            disabled={contactIndex === contacts.length - 1}
-          >
-            ›
-          </button>
-        </div>
-      </header>
-
-      <div className="contact-panel__profile">
-        <AvatarInitials name={fullName} size="lg" className="contact-panel__avatar" />
-        <div className="contact-panel__name-row">
-          <h1 className="contact-panel__name">{fullName}</h1>
-          {phone && (
-            <button type="button" className="contact-panel__call" aria-label="Call contact">
-              <IconPhone />
+          <div className="contact-panel__pagination">
+            <span>
+              {contactIndex + 1} of {contacts.length}
+            </span>
+            <button
+              type="button"
+              aria-label="Previous contact"
+              onClick={goToPrevious}
+              disabled={contactIndex === 0}
+            >
+              ‹
             </button>
-          )}
-        </div>
-      </div>
-
-      <div className="contact-panel__meta">
-        <div className="meta-row">
-          <span className="meta-row__label">Owner</span>
-          <div className="meta-row__value">
-            <AvatarInitials name={contact.owner} size="sm" />
-            <span>{contact.owner}</span>
+            <button
+              type="button"
+              aria-label="Next contact"
+              onClick={goToNext}
+              disabled={contactIndex === editableContacts.length - 1}
+            >
+              ›
+            </button>
           </div>
-        </div>
-        <div className="meta-row">
-          <span className="meta-row__label">Followers</span>
-          <div className="meta-row__value meta-row__followers">
-            {contact.followers.map((follower) => (
-              <AvatarInitials
-                key={follower}
-                name={follower}
-                size="md"
-                className="follower-avatar"
+        </header>
+
+        <div className="contact-panel__content">
+          <div className="contact-panel__profile">
+            <AvatarInitials name={fullName} size="lg" className="contact-panel__avatar" />
+            <div className="contact-panel__name-row">
+              <h1 className="contact-panel__name">{fullName}</h1>
+              {phone && (
+                <button type="button" className="contact-panel__call" aria-label="Call contact">
+                  <IconPhone />
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className="contact-panel__meta">
+            <div className="meta-row">
+              <span className="meta-row__label">Owner</span>
+              <div className="meta-row__value">
+                <AvatarInitials name={contact.owner} size="sm" />
+                <span>{contact.owner}</span>
+              </div>
+            </div>
+            <div className="meta-row">
+              <span className="meta-row__label">Followers</span>
+              <div className="meta-row__value meta-row__followers">
+                {contact.followers.map((follower) => (
+                  <AvatarInitials
+                    key={follower}
+                    name={follower}
+                    size="md"
+                    className="follower-avatar"
+                  />
+                ))}
+                <IconChevron size={14} />
+              </div>
+            </div>
+            <div className="meta-row">
+              <span className="meta-row__label">Tags</span>
+              <div className="meta-row__tags">
+                {visibleTags.map((tag) => (
+                  <span key={tag} className="tag">
+                    {tag}
+                    <button type="button" aria-label={`Remove ${tag}`}>
+                      ×
+                    </button>
+                  </span>
+                ))}
+                {hiddenTagsCount > 0 && (
+                  <button
+                    type="button"
+                    className="tag tag--more"
+                    onClick={() => toggleTags(contact.id)}
+                    aria-expanded={tagsExpanded}
+                  >
+                    {tagsExpanded ? 'Show less' : `+${hiddenTagsCount}`}
+                  </button>
+                )}
+                <button type="button" className="tag-add" aria-label="Add tag">
+                  +
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div className="contact-panel__tabs">
+            {ACTION_TABS.map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="contact-panel__search">
+            <IconSearch className="search-icon" />
+            <input
+              type="search"
+              placeholder={searchPlaceholder}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+            <button type="button" className="filter-btn" aria-label="Filter fields">
+              <IconFilter />
+            </button>
+          </div>
+
+          <div className="contact-panel__folders">
+            {visibleFolders.map((folder) => (
+              <FieldFolder
+                key={folder.id}
+                folder={folder}
+                searchQuery={searchQuery}
+                onFieldUpdate={updateContactField}
               />
             ))}
-            <IconChevron size={14} />
           </div>
         </div>
-        <div className="meta-row">
-          <span className="meta-row__label">Tags</span>
-          <div className="meta-row__tags">
-            {contact.tags.map((tag) => (
-              <span key={tag} className="tag">
-                {tag}
-                <button type="button" aria-label={`Remove ${tag}`}>
-                  ×
-                </button>
-              </span>
-            ))}
-            <span className="tag tag--more">+{MORE_TAGS_COUNT}</span>
-            <button type="button" className="tag-add" aria-label="Add tag">
-              +
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <div className="contact-panel__tabs">
-        {ACTION_TABS.map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            className={`tab-btn ${activeTab === tab.id ? 'active' : ''}`}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
-
-      <div className="contact-panel__search">
-        <IconSearch className="search-icon" />
-        <input
-          type="search"
-          placeholder={searchPlaceholder}
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <button type="button" className="filter-btn" aria-label="Filter fields">
-          <IconFilter />
-        </button>
-      </div>
-
-      <div className="contact-panel__folders">
-        {visibleFolders.map((folder) => (
-          <FieldFolder key={folder.id} folder={folder} searchQuery={searchQuery} />
-        ))}
-      </div>
       </div>
     </aside>
   );

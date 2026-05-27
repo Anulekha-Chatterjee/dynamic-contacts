@@ -55,6 +55,12 @@ export interface ContactFieldFolder {
   id: string;
   label: string;
   defaultExpanded?: boolean;
+  actions?: {
+    addField?: {
+      enabled: boolean;
+      label?: string;
+    };
+  };
   fields: ContactFieldSchema[];
 }
 
@@ -120,4 +126,12 @@ export interface ConversationsConfig {
     placeholder: string;
     typingIndicator?: string;
   };
+}
+
+export interface AppConfig {
+  layout: PageLayoutConfig;
+  contactData: ContactDataConfig;
+  contactFields: ContactFieldsConfig;
+  notes: NotesConfig;
+  conversations: ConversationsConfig;
 }

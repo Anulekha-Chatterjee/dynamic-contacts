@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react';
-import { config } from '../../config/loadConfig';
-import type { LayoutColumn } from '../../types/config';
+import type { AppConfig, LayoutColumn } from '../../types/config';
 import { buildGridTemplateColumns } from '../../utils/buildGridTemplateColumns';
 import { ContactPanel } from '../contact/ContactPanel';
 import { ConversationsPanel } from '../conversations/ConversationsPanel';
@@ -14,6 +13,10 @@ interface PanelVisibility {
   notesPanelOpen: boolean;
 }
 
+interface PageLayoutProps {
+  config: AppConfig;
+}
+
 function isColumnVisible(column: LayoutColumn, panels: PanelVisibility): boolean {
   if (!column.visible) return false;
   if (column.component === 'contact' && !panels.contactPanelOpen) return false;
@@ -22,6 +25,7 @@ function isColumnVisible(column: LayoutColumn, panels: PanelVisibility): boolean
 }
 
 function renderColumn(
+  config: AppConfig,
   column: LayoutColumn,
   panels: PanelVisibility,
   onContactPanelBack: () => void,
@@ -54,16 +58,19 @@ function renderColumn(
   }
 }
 
-export function PageLayout() {
+export function PageLayout({ config }: PageLayoutProps) {
   const { layout } = config;
   const [contactPanelOpen, setContactPanelOpen] = useState(true);
   const [notesPanelOpen, setNotesPanelOpen] = useState(true);
 
-  const panelVisibility: PanelVisibility = { contactPanelOpen, notesPanelOpen };
+  const panelVisibility = useMemo<PanelVisibility>(
+    () => ({ contactPanelOpen, notesPanelOpen }),
+    [contactPanelOpen, notesPanelOpen],
+  );
 
   const visibleColumns = useMemo(
     () => layout.columns.filter((c) => isColumnVisible(c, panelVisibility)),
-    [layout.columns, contactPanelOpen, notesPanelOpen],
+    [layout.columns, panelVisibility],
   );
 
   const gridTemplateColumns = useMemo(
@@ -90,7 +97,7 @@ export function PageLayout() {
       )}
       <div className="crm-page__grid" style={{ gridTemplateColumns }}>
         {layout.columns.map((column) =>
-          renderColumn(column, panelVisibility, toggleContactPanel, toggleNotesPanel),
+          renderColumn(config, column, panelVisibility, toggleContactPanel, toggleNotesPanel),
         )}
       </div>
       {!notesPanelOpen && (

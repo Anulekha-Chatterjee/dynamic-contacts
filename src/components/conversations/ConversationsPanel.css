@@ -17,12 +17,26 @@
   color: var(--color-text);
 }
 
+.conversations-panel__title svg {
+  color: var(--color-text-muted);
+  transition: transform 0.2s;
+}
+
+.conversations-panel__title svg.expanded {
+  transform: rotate(180deg);
+}
+
+.conversations-panel.panel--mobile-collapsed .conversations-panel__feed,
+.conversations-panel.panel--mobile-collapsed .conversations-panel__composer {
+  display: none;
+}
+
 .conversations-panel__feed {
   flex: 1;
   min-height: 0;
   overflow-y: auto;
   overflow-x: hidden;
-  padding: 16px 20px;
+  padding: 16px 20px 20px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -30,6 +44,8 @@
 }
 
 .email-card {
+  flex: 0 0 auto;
+  min-width: 0;
   border: 1px solid var(--color-border);
   border-radius: 10px;
   overflow: hidden;
@@ -123,6 +139,7 @@
 }
 
 .chat-bubble {
+  flex: 0 0 auto;
   display: flex;
   gap: 8px;
   align-items: flex-start;
@@ -165,6 +182,33 @@
   font-style: italic;
 }
 
+.reply-context {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: #f9fafb;
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+.reply-context span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.reply-context button {
+  color: var(--color-text-muted);
+  font-size: 16px;
+  line-height: 1;
+}
+
 .composer-box {
   display: flex;
   align-items: flex-end;
@@ -203,4 +247,38 @@
 
 .composer-box__send {
   color: var(--color-primary) !important;
+}
+
+.composer-box__send:disabled {
+  color: #9ca3af !important;
+  cursor: not-allowed;
+}
+
+@media (max-width: 1024px) {
+  .conversations-panel__feed {
+    flex: none;
+    min-height: auto;
+    overflow: visible;
+  }
+}
+
+@media (max-width: 520px) {
+  .conversations-panel__header,
+  .conversations-panel__feed,
+  .conversations-panel__composer {
+    padding-left: 14px;
+    padding-right: 14px;
+  }
+
+  .chat-bubble {
+    max-width: 100%;
+  }
+
+  .composer-box {
+    flex-wrap: wrap;
+  }
+
+  .composer-box textarea {
+    min-width: 180px;
+  }
 }

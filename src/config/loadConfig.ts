@@ -4,6 +4,7 @@ import contactFieldsConfig from '../data/contactFields.json';
 import notesConfig from '../data/notes.json';
 import conversationsConfig from '../data/conversations.json';
 import type {
+  AppConfig,
   ContactDataConfig,
   ContactFieldsConfig,
   ConversationsConfig,
@@ -11,7 +12,7 @@ import type {
   PageLayoutConfig,
 } from '../types/config';
 
-export const config = {
+export const config: AppConfig = {
   layout: layoutConfig as PageLayoutConfig,
   contactData: contactDataConfig as ContactDataConfig,
   contactFields: contactFieldsConfig as ContactFieldsConfig,

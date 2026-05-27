@@ -1,1 +1,28 @@
-/* App-level overrides if needed */
+.app-state {
+  display: grid;
+  min-height: 100%;
+  place-items: center;
+  padding: 24px;
+  background: var(--color-bg);
+}
+
+.app-state__panel {
+  width: min(420px, 100%);
+  padding: 24px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-panel);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-panel);
+  text-align: center;
+}
+
+.app-state__panel h1 {
+  margin: 0 0 8px;
+  font-size: 18px;
+}
+
+.app-state__panel p {
+  margin: 0;
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}

@@ -1,5 +1,9 @@
 import { useState } from 'react';
-import type { ResolvedContactFieldFolder } from '../../types/config';
+import type {
+  ContactFieldValue,
+  ResolvedContactField,
+  ResolvedContactFieldFolder,
+} from '../../types/config';
 import { IconChevron } from '../icons/Icons';
 import { FieldRow } from './FieldRow';
 import './ContactPanel.css';
@@ -7,6 +11,7 @@ import './ContactPanel.css';
 interface FieldFolderProps {
   folder: ResolvedContactFieldFolder;
   searchQuery: string;
+  onFieldUpdate: (field: ResolvedContactField, value: ContactFieldValue) => void;
 }
 
 function folderMatchesSearch(folder: ResolvedContactFieldFolder, query: string): boolean {
@@ -19,8 +24,9 @@ function folderMatchesSearch(folder: ResolvedContactFieldFolder, query: string):
   );
 }
 
-export function FieldFolder({ folder, searchQuery }: FieldFolderProps) {
+export function FieldFolder({ folder, searchQuery, onFieldUpdate }: FieldFolderProps) {
   const [expanded, setExpanded] = useState(folder.defaultExpanded ?? true);
+  const [editing, setEditing] = useState(false);
 
   if (!folderMatchesSearch(folder, searchQuery)) return null;
 
@@ -35,8 +41,19 @@ export function FieldFolder({ folder, searchQuery }: FieldFolderProps) {
 
   if (visibleFields.length === 0 && searchQuery) return null;
 
+  const addFieldAction = folder.actions?.addField;
+  const canAddField = Boolean(addFieldAction?.enabled && folder.fields.length);
+  const hasNameFields = visibleFields.some(
+    (field) => field.key === 'firstName' || field.key === 'lastName',
+  );
+
+  function toggleEditing() {
+    setEditing((isEditing) => !isEditing);
+    setExpanded(true);
+  }
+
   return (
-    <section className="field-folder">
+    <section className={`field-folder ${editing ? 'field-folder--editing' : ''}`}>
       <header className="field-folder__header">
         <div className="field-folder__toggle">
           <button
@@ -48,15 +65,26 @@ export function FieldFolder({ folder, searchQuery }: FieldFolderProps) {
             <span className="field-folder__title">{folder.label}</span>
             <IconChevron className={`field-folder__chevron ${expanded ? 'expanded' : ''}`} />
           </button>
-          <button type="button" className="field-folder__add">
-            + Add
-          </button>
+          {canAddField && (
+            <button type="button" className="field-folder__add" onClick={toggleEditing}>
+              {editing ? 'Done' : addFieldAction?.label ?? '+ Add'}
+            </button>
+          )}
         </div>
       </header>
       {expanded && (
-        <div className="field-folder__body">
+        <div
+          className={`field-folder__body ${
+            editing || hasNameFields ? 'field-folder__body--grid' : ''
+          }`}
+        >
           {visibleFields.map((field) => (
-            <FieldRow key={field.id} field={field} />
+            <FieldRow
+              key={field.id}
+              field={field}
+              editing={editing}
+              onValueChange={onFieldUpdate}
+            />
           ))}
         </div>
       )}
