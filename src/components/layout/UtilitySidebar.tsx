@@ -11,11 +11,26 @@ export function UtilitySidebar({ config }: UtilitySidebarProps) {
 
   return (
     <nav className="utility-sidebar" aria-label="Utility navigation">
-      {config.icons.map((icon) => (
-        <button key={icon.id} type="button" title={icon.label} aria-label={icon.label}>
-          <UtilityIcon name={icon.icon} />
-        </button>
-      ))}
+      {config.icons.map((icon) => {
+        const isActive = icon.id === config.activeIconId;
+
+        return (
+          <button
+            key={icon.id}
+            type="button"
+            className={
+              isActive
+                ? 'utility-sidebar__button utility-sidebar__button--active'
+                : 'utility-sidebar__button'
+            }
+            title={icon.label}
+            aria-label={icon.label}
+            aria-current={isActive ? 'page' : undefined}
+          >
+            <UtilityIcon name={icon.icon} />
+          </button>
+        );
+      })}
     </nav>
   );
 }

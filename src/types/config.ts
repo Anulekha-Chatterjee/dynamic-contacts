@@ -23,6 +23,7 @@ export interface PageLayoutConfig {
   columns: LayoutColumn[];
   utilitySidebar: {
     visible: boolean;
+    activeIconId?: string;
     icons: Array<{ id: string; label: string; icon: string }>;
   };
 }

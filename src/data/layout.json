@@ -6,6 +6,7 @@
   ],
   "utilitySidebar": {
     "visible": true,
+    "activeIconId": "docs",
     "icons": [
       { "id": "clock", "label": "Activity", "icon": "clock" },
       { "id": "network", "label": "Network", "icon": "network" },
