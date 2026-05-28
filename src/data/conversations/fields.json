@@ -1,0 +1,23 @@
+{
+  "view": {
+    "showHeaderIcon": true,
+    "emptyState": "No conversations for this contact yet.",
+    "email": {
+      "showAvatar": true,
+      "showStarAction": true,
+      "showMoreAction": true,
+      "showExpandAction": true,
+      "showReplyAction": true
+    },
+    "chat": {
+      "showChannelIcon": true,
+      "showReplyPreview": true
+    },
+    "composer": {
+      "enabled": true,
+      "showChannelButton": true,
+      "showAiAssist": true,
+      "sendOnEnter": true
+    }
+  }
+}

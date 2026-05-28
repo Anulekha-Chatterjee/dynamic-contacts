@@ -6,27 +6,42 @@ import {
   type FormEvent,
   type KeyboardEvent,
 } from 'react';
-import type { ConversationItem, ConversationsConfig } from '../../types/config';
+import type {
+  ConversationItem,
+  ConversationsDataConfig,
+  ConversationsFieldsConfig,
+} from '../../types/config';
 import { AvatarInitials } from '../common/AvatarInitials';
-import { IconChevron, IconConversation, IconMail, IconMore, IconSend, IconStar } from '../icons/Icons';
+import {
+  IconChevron,
+  IconConversation,
+  IconMail,
+  IconMore,
+  IconSend,
+  IconStar,
+} from '../icons/Icons';
 import './ConversationsPanel.css';
 
 interface ConversationsPanelProps {
-  config: ConversationsConfig;
+  data: ConversationsDataConfig;
+  fields: ConversationsFieldsConfig;
   contactId?: string;
   contactName?: string;
 }
 
 type EmailConversationItem = Extract<ConversationItem, { type: 'email' }>;
 type ChatConversationItem = Extract<ConversationItem, { type: 'chat' }>;
+type ConversationViewConfig = ConversationsFieldsConfig['view'];
 
 function EmailItem({
   item,
   displayName,
+  view,
   onReply,
 }: {
   item: EmailConversationItem;
   displayName?: string;
+  view: ConversationViewConfig;
   onReply: (item: EmailConversationItem) => void;
 }) {
   const paragraphs = item.body.split('\n');
@@ -36,23 +51,31 @@ function EmailItem({
     <article className="email-card" id={`conversation-${item.id}`}>
       <div className="email-card__subject">
         <span>{item.subject}</span>
-        <button type="button" aria-label="Expand">⤢</button>
+        {view.email?.showExpandAction !== false && (
+          <button type="button" aria-label="Expand">⤢</button>
+        )}
       </div>
       <div className="email-card__meta">
-        <AvatarInitials name={senderName} size="xl" />
+        {view.email?.showAvatar !== false && <AvatarInitials name={senderName} size="xl" />}
         <div className="email-card__sender">
           <strong>{senderName}</strong>
           <span>{item.recipient}</span>
         </div>
         <span className="email-card__time">{item.timestamp}</span>
-        <div className="email-card__actions">
-          <button type="button" aria-label="Star">
-            <IconStar filled={item.starred} />
-          </button>
-          <button type="button" aria-label="More">
-            <IconMore />
-          </button>
-        </div>
+        {(view.email?.showStarAction !== false || view.email?.showMoreAction !== false) && (
+          <div className="email-card__actions">
+            {view.email?.showStarAction !== false && (
+              <button type="button" aria-label="Star">
+                <IconStar filled={item.starred} />
+              </button>
+            )}
+            {view.email?.showMoreAction !== false && (
+              <button type="button" aria-label="More">
+                <IconMore />
+              </button>
+            )}
+          </div>
+        )}
       </div>
       <div className="email-card__body">
         {paragraphs.map((p, i) => (
@@ -64,9 +87,11 @@ function EmailItem({
           </a>
         ))}
       </div>
-      <button type="button" className="email-card__reply" onClick={() => onReply(item)}>
-        Reply
-      </button>
+      {view.email?.showReplyAction !== false && (
+        <button type="button" className="email-card__reply" onClick={() => onReply(item)}>
+          Reply
+        </button>
+      )}
     </article>
   );
 }
@@ -74,19 +99,23 @@ function EmailItem({
 function ChatItem({
   item,
   contactName,
+  view,
   onReplyLinkClick,
 }: {
   item: ChatConversationItem;
   contactName?: string;
+  view: ConversationViewConfig;
   onReplyLinkClick: (itemId: string) => void;
 }) {
   const senderName = item.sender === 'You' ? item.sender : contactName || item.sender;
 
   return (
     <div className="chat-bubble" id={`conversation-${item.id}`}>
-      {item.channel === 'whatsapp' && <span className="chat-bubble__icon">💬</span>}
+      {view.chat?.showChannelIcon !== false && item.channel === 'whatsapp' && (
+        <span className="chat-bubble__icon">💬</span>
+      )}
       <div className="chat-bubble__content">
-        {item.replyTo && (
+        {view.chat?.showReplyPreview !== false && item.replyTo && (
           <button
             type="button"
             className="chat-bubble__reply-link"
@@ -107,7 +136,8 @@ function getContactFirstName(contactName?: string) {
 }
 
 export function ConversationsPanel({
-  config,
+  data,
+  fields,
   contactId = 'default',
   contactName,
 }: ConversationsPanelProps) {
@@ -121,8 +151,29 @@ export function ConversationsPanel({
   const [replyTargetByContactId, setReplyTargetByContactId] = useState<
     Record<string, EmailConversationItem | null>
   >({});
-  const threadConfig = config.byContactId[contactId];
-  const composerConfig = threadConfig?.composer ?? config.composer;
+  const threadConfig = data.byContactId[contactId];
+  const viewConfig: ConversationViewConfig = {
+    showHeaderIcon: fields.view.showHeaderIcon ?? true,
+    emptyState: fields.view.emptyState ?? 'No conversations yet.',
+    email: {
+      showAvatar: fields.view.email?.showAvatar ?? true,
+      showStarAction: fields.view.email?.showStarAction ?? true,
+      showMoreAction: fields.view.email?.showMoreAction ?? true,
+      showExpandAction: fields.view.email?.showExpandAction ?? true,
+      showReplyAction: fields.view.email?.showReplyAction ?? true,
+    },
+    chat: {
+      showChannelIcon: fields.view.chat?.showChannelIcon ?? true,
+      showReplyPreview: fields.view.chat?.showReplyPreview ?? true,
+    },
+    composer: {
+      enabled: fields.view.composer?.enabled ?? true,
+      showChannelButton: fields.view.composer?.showChannelButton ?? true,
+      showAiAssist: fields.view.composer?.showAiAssist ?? true,
+      sendOnEnter: fields.view.composer?.sendOnEnter ?? true,
+    },
+  };
+  const composerConfig = threadConfig?.composer ?? data.composer;
   const seedItems = useMemo(() => threadConfig?.items ?? [], [threadConfig?.items]);
   const items = itemsByContactId[contactId] ?? seedItems;
   const message = messageByContactId[contactId] ?? '';
@@ -197,7 +248,7 @@ export function ConversationsPanel({
   }
 
   function handleComposerKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
-    if (event.key === 'Enter' && !event.shiftKey) {
+    if (viewConfig.composer?.sendOnEnter !== false && event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       handleSubmitMessage();
     }
@@ -225,80 +276,92 @@ export function ConversationsPanel({
           onClick={toggleMobilePanel}
           aria-expanded={!mobileCollapsed}
         >
-          <IconConversation />
-          {config.title}
+          {viewConfig.showHeaderIcon !== false && <IconConversation />}
+          {data.title}
           <IconChevron className={mobileCollapsed ? '' : 'expanded'} />
         </button>
       </header>
 
       <div className="conversations-panel__feed" ref={feedRef}>
-        {items.map((item) =>
-          item.type === 'email' ? (
-            <EmailItem
-              key={item.id}
-              item={item}
-              displayName={contactName}
-              onReply={handleReply}
-            />
-          ) : (
-            <ChatItem
-              key={item.id}
-              item={item}
-              contactName={firstName}
-              onReplyLinkClick={scrollToConversationItem}
-            />
-          ),
+        {items.length === 0 ? (
+          <p className="conversation-empty">{viewConfig.emptyState}</p>
+        ) : (
+          items.map((item) =>
+            item.type === 'email' ? (
+              <EmailItem
+                key={item.id}
+                item={item}
+                displayName={contactName}
+                view={viewConfig}
+                onReply={handleReply}
+              />
+            ) : (
+              <ChatItem
+                key={item.id}
+                item={item}
+                contactName={firstName}
+                view={viewConfig}
+                onReplyLinkClick={scrollToConversationItem}
+              />
+            ),
+          )
         )}
       </div>
 
-      <footer className="conversations-panel__composer">
-        {typingIndicator && (
-          <p className="typing-indicator">{typingIndicator}</p>
-        )}
-        {replyTarget && (
-          <div className="reply-context">
-            <span>Replying to: {replyTarget.subject}</span>
-            <button type="button" aria-label="Clear reply" onClick={clearReplyTarget}>
-              ×
-            </button>
-          </div>
-        )}
-        <form className="composer-box" onSubmit={handleSubmitMessage}>
-          <button type="button" className="composer-box__channel" aria-label="Message type">
-            <IconMail size={16} />
-          </button>
-          <textarea
-            ref={composerRef}
-            placeholder={
-              replyTarget
-                ? `Reply to ${contactName || replyTarget.sender.name}...`
-                : placeholder
-            }
-            rows={1}
-            value={message}
-            onChange={(event) =>
-              setMessageByContactId((currentMessages) => ({
-                ...currentMessages,
-                [contactId]: event.target.value,
-              }))
-            }
-            onKeyDown={handleComposerKeyDown}
-          />
-          <div className="composer-box__tools">
-            <button type="button" className="composer-box__sparkle" aria-label="AI assist">
-              ✨
-            </button>
-            <button
-              type="submit"
-              className="composer-box__send"
-              aria-label="Send"
-              disabled={!message.trim()}
-            >
-              <IconSend />
-            </button>
-          </div>
-        </form>
-      </footer>
+      {viewConfig.composer?.enabled !== false && (
+        <footer className="conversations-panel__composer">
+          {typingIndicator && (
+            <p className="typing-indicator">{typingIndicator}</p>
+          )}
+          {replyTarget && (
+            <div className="reply-context">
+              <span>Replying to: {replyTarget.subject}</span>
+              <button type="button" aria-label="Clear reply" onClick={clearReplyTarget}>
+                ×
+              </button>
+            </div>
+          )}
+          <form className="composer-box" onSubmit={handleSubmitMessage}>
+            {viewConfig.composer?.showChannelButton !== false && (
+              <button type="button" className="composer-box__channel" aria-label="Message type">
+                <IconMail size={16} />
+              </button>
+            )}
+            <textarea
+              ref={composerRef}
+              placeholder={
+                replyTarget
+                  ? `Reply to ${contactName || replyTarget.sender.name}...`
+                  : placeholder
+              }
+              rows={1}
+              value={message}
+              onChange={(event) =>
+                setMessageByContactId((currentMessages) => ({
+                  ...currentMessages,
+                  [contactId]: event.target.value,
+                }))
+              }
+              onKeyDown={handleComposerKeyDown}
+            />
+            <div className="composer-box__tools">
+              {viewConfig.composer?.showAiAssist !== false && (
+                <button type="button" className="composer-box__sparkle" aria-label="AI assist">
+                  ✨
+                </button>
+              )}
+              <button
+                type="submit"
+                className="composer-box__send"
+                aria-label="Send"
+                disabled={!message.trim()}
+              >
+                <IconSend />
+              </button>
+            </div>
+          </form>
+        </footer>
+      )}
     </main>
   );
 }

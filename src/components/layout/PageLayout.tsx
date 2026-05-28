@@ -86,7 +86,8 @@ const panelRegistry: Record<string, (props: PanelRendererProps) => ReactElement>
   conversations: ({ config, contacts, column, contactIndex }) => (
     <ConversationsPanel
       key={column.id}
-      config={config.conversations}
+      data={config.conversationsData}
+      fields={config.conversationsFields}
       contactId={contacts[contactIndex]?.id}
       contactName={contacts[contactIndex] ? getContactDisplayName(contacts[contactIndex]) : ''}
     />
@@ -94,7 +95,8 @@ const panelRegistry: Record<string, (props: PanelRendererProps) => ReactElement>
   notes: ({ config, contacts, column, contactIndex, onNotesPanelClose }) => (
     <NotesPanel
       key={column.id}
-      config={config.notes}
+      data={config.notesData}
+      fields={config.notesFields}
       contactId={contacts[contactIndex]?.id}
       onCloseClick={onNotesPanelClose}
     />

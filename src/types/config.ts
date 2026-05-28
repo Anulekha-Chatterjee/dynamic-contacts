@@ -102,7 +102,29 @@ export interface Note {
   timestamp: string;
 }
 
-export interface NotesConfig {
+export interface NotesFieldsConfig {
+  view: {
+    addAction?: {
+      enabled: boolean;
+      label: string;
+    };
+    composer?: {
+      enabled: boolean;
+      placeholder: string;
+      rows?: number;
+    };
+    mentions?: {
+      enabled: boolean;
+      users: string[];
+    };
+    closeAction?: {
+      enabled: boolean;
+    };
+    emptyState?: string;
+  };
+}
+
+export interface NotesDataConfig {
   title: string;
   notes: Note[];
   byContactId?: Record<string, Note[]>;
@@ -143,7 +165,31 @@ export interface ConversationThreadConfig {
   };
 }
 
-export interface ConversationsConfig {
+export interface ConversationsFieldsConfig {
+  view: {
+    showHeaderIcon?: boolean;
+    emptyState?: string;
+    email?: {
+      showAvatar?: boolean;
+      showStarAction?: boolean;
+      showMoreAction?: boolean;
+      showExpandAction?: boolean;
+      showReplyAction?: boolean;
+    };
+    chat?: {
+      showChannelIcon?: boolean;
+      showReplyPreview?: boolean;
+    };
+    composer?: {
+      enabled: boolean;
+      showChannelButton?: boolean;
+      showAiAssist?: boolean;
+      sendOnEnter?: boolean;
+    };
+  };
+}
+
+export interface ConversationsDataConfig {
   title: string;
   byContactId: Record<string, ConversationThreadConfig>;
   composer: {
@@ -156,6 +202,8 @@ export interface AppConfig {
   layout: PageLayoutConfig;
   contactData: ContactDataConfig;
   contactFields: ContactFieldsConfig;
-  notes: NotesConfig;
-  conversations: ConversationsConfig;
+  notesData: NotesDataConfig;
+  notesFields: NotesFieldsConfig;
+  conversationsData: ConversationsDataConfig;
+  conversationsFields: ConversationsFieldsConfig;
 }

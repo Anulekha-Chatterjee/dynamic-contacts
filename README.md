@@ -27,7 +27,11 @@ Open [http://localhost:5173](http://localhost:5173).
 ```txt
 src/
 ├── config/         # Loads typed JSON seed config
-├── data/           # JSON data that drives layout, contacts, notes, conversations
+├── data/           # JSON data/config grouped by domain
+│   ├── contacts/
+│   ├── conversations/
+│   ├── notes/
+│   └── layout.json
 ├── services/       # Mock API boundary and localStorage caching
 ├── types/          # TypeScript contracts for config/data shapes
 ├── utils/          # Field resolving and formatting helpers
@@ -46,10 +50,12 @@ src/
 | File | Purpose |
 | --- | --- |
 | `src/data/layout.json` | Defines layout columns, collapsible panels, runtime layout modes, utility sidebar icons, and the default active sidebar item |
-| `src/data/contactFields.json` | Defines contact field folders, labels, field types, options, and folder actions |
-| `src/data/contactData.json` | Contains contact records, UUID-style contact IDs, owners, followers, tags, and field values |
-| `src/data/conversations.json` | Stores per-contact conversation threads under `byContactId` |
-| `src/data/notes.json` | Stores default notes and per-contact notes under `byContactId` |
+| `src/data/contacts/fields.json` | Defines contact field folders, labels, field types, options, and folder actions |
+| `src/data/contacts/data.json` | Contains contact records, UUID-style contact IDs, owners, followers, tags, and field values |
+| `src/data/conversations/data.json` | Stores per-contact conversation threads under `byContactId` and composer copy |
+| `src/data/conversations/fields.json` | Stores Conversations view config for email/chat/composer behavior |
+| `src/data/notes/data.json` | Stores default notes and per-contact notes under `byContactId` |
+| `src/data/notes/fields.json` | Stores Notes view config for add/composer/mention behavior |
 
 Contact IDs are UUID-style strings instead of name-based slugs, so multiple contacts can share the same name without breaking notes or conversations.
 
@@ -57,7 +63,7 @@ Contact IDs are UUID-style strings instead of name-based slugs, so multiple cont
 
 - JSON-driven CRM layout with Contact Details, Conversations, Notes, and utility sidebar panels
 - Mock API service that simulates async loading and caches successful responses in `localStorage`
-- Dynamic field folders and rows generated from `contactFields.json`
+- Dynamic field folders and rows generated from `contacts/fields.json`
 - Inline contact editing from each folder `+ Add` action
 - Deferred edit commit: field changes are drafted locally and only update shared contact state after `Done`
 - First Name and Last Name render side by side in view and edit modes
@@ -65,6 +71,8 @@ Contact IDs are UUID-style strings instead of name-based slugs, so multiple cont
 - Contact pagination with previous/next controls
 - Runtime layout toggle between JSON-defined balanced and conversation-focus configs
 - Per-contact conversations and per-contact notes
+- Configurable Conversations view controls for header icon, email actions, chat reply previews, composer controls, and empty state
+- Configurable Notes view controls for add action, composer placeholder/rows, mention users, close action, and empty state
 - Conversation composer for adding messages
 - Email reply flow with focused composer, reply context, and a WhatsApp-style reply preview link on sent replies
 - Conversation feed auto-scrolls to the newest message
@@ -149,7 +157,7 @@ Only `All Fields` is currently functionally implemented. The other tabs are pres
 
 ## Customization Examples
 
-Add a field in `src/data/contactFields.json`:
+Add a field in `src/data/contacts/fields.json`:
 
 ```json
 {
@@ -161,7 +169,7 @@ Add a field in `src/data/contactFields.json`:
 }
 ```
 
-Then add the matching value to a contact in `src/data/contactData.json`:
+Then add the matching value to a contact in `src/data/contacts/data.json`:
 
 ```json
 {

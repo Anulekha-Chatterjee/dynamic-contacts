@@ -70,6 +70,13 @@
   -webkit-overflow-scrolling: touch;
 }
 
+.notes-panel__empty {
+  margin: auto;
+  color: var(--color-text-muted);
+  font-size: 13px;
+  text-align: center;
+}
+
 .note-composer {
   display: grid;
   gap: 10px;

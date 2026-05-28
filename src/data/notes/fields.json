@@ -1,0 +1,21 @@
+{
+    "view": {
+    "addAction": {
+      "enabled": true,
+      "label": "+ Add"
+    },
+    "composer": {
+      "enabled": true,
+      "placeholder": "Add a note... use @name to mention someone",
+      "rows": 4
+    },
+    "mentions": {
+      "enabled": true,
+      "users": ["Aaron Site", "Devon Lane"]
+    },
+    "closeAction": {
+      "enabled": true
+    },
+    "emptyState": "No notes for this contact yet."
+  }
+}

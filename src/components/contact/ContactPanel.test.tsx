@@ -1,8 +1,8 @@
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
-import contactData from '../../data/contactData.json';
-import contactFields from '../../data/contactFields.json';
+import contactData from '../../data/contacts/data.json';
+import contactFields from '../../data/contacts/fields.json';
 import { ContactPanel } from './ContactPanel';
 
 describe('ContactPanel', () => {

@@ -1,14 +1,18 @@
 import layoutConfig from '../data/layout.json';
-import contactDataConfig from '../data/contactData.json';
-import contactFieldsConfig from '../data/contactFields.json';
-import notesConfig from '../data/notes.json';
-import conversationsConfig from '../data/conversations.json';
+import contactDataConfig from '../data/contacts/data.json';
+import contactFieldsConfig from '../data/contacts/fields.json';
+import notesDataConfig from '../data/notes/data.json';
+import notesFieldsConfig from '../data/notes/fields.json';
+import conversationsDataConfig from '../data/conversations/data.json';
+import conversationsFieldsConfig from '../data/conversations/fields.json';
 import type {
   AppConfig,
   ContactDataConfig,
   ContactFieldsConfig,
-  ConversationsConfig,
-  NotesConfig,
+  ConversationsDataConfig,
+  ConversationsFieldsConfig,
+  NotesDataConfig,
+  NotesFieldsConfig,
   PageLayoutConfig,
 } from '../types/config';
 
@@ -16,6 +20,8 @@ export const config: AppConfig = {
   layout: layoutConfig as PageLayoutConfig,
   contactData: contactDataConfig as ContactDataConfig,
   contactFields: contactFieldsConfig as ContactFieldsConfig,
-  notes: notesConfig as NotesConfig,
-  conversations: conversationsConfig as ConversationsConfig,
+  notesData: notesDataConfig as NotesDataConfig,
+  notesFields: notesFieldsConfig as NotesFieldsConfig,
+  conversationsData: conversationsDataConfig as ConversationsDataConfig,
+  conversationsFields: conversationsFieldsConfig as ConversationsFieldsConfig,
 };
