@@ -28,6 +28,9 @@ function renderColumn(
   config: AppConfig,
   column: LayoutColumn,
   panels: PanelVisibility,
+  contactIndex: number,
+  onPreviousContact: () => void,
+  onNextContact: () => void,
   onContactPanelBack: () => void,
   onNotesPanelClose: () => void,
 ) {
@@ -40,16 +43,26 @@ function renderColumn(
           key={column.id}
           contacts={config.contactData.contacts}
           contactFields={config.contactFields}
+          contactIndex={contactIndex}
+          onPreviousContact={onPreviousContact}
+          onNextContact={onNextContact}
           onBackClick={onContactPanelBack}
         />
       );
     case 'conversations':
-      return <ConversationsPanel key={column.id} config={config.conversations} />;
+      return (
+        <ConversationsPanel
+          key={column.id}
+          config={config.conversations}
+          contactId={config.contactData.contacts[contactIndex]?.id}
+        />
+      );
     case 'notes':
       return (
         <NotesPanel
           key={column.id}
           config={config.notes}
+          contactId={config.contactData.contacts[contactIndex]?.id}
           onCloseClick={onNotesPanelClose}
         />
       );
@@ -60,6 +73,7 @@ function renderColumn(
 
 export function PageLayout({ config }: PageLayoutProps) {
   const { layout } = config;
+  const [contactIndex, setContactIndex] = useState(0);
   const [contactPanelOpen, setContactPanelOpen] = useState(true);
   const [notesPanelOpen, setNotesPanelOpen] = useState(true);
 
@@ -86,6 +100,17 @@ export function PageLayout({ config }: PageLayoutProps) {
     setNotesPanelOpen((open) => !open);
   }
 
+  function goToPreviousContact() {
+    setContactIndex((index) => Math.max(0, index - 1));
+  }
+
+  function goToNextContact() {
+    setContactIndex((index) => Math.min(config.contactData.contacts.length - 1, index + 1));
+  }
+
+  const isFirstContact = contactIndex === 0;
+  const isLastContact = contactIndex === config.contactData.contacts.length - 1;
+
   return (
     <div className="crm-page">
       {!contactPanelOpen && (
@@ -97,13 +122,41 @@ export function PageLayout({ config }: PageLayoutProps) {
       )}
       <div className="crm-page__grid" style={{ gridTemplateColumns }}>
         {layout.columns.map((column) =>
-          renderColumn(config, column, panelVisibility, toggleContactPanel, toggleNotesPanel),
+          renderColumn(
+            config,
+            column,
+            panelVisibility,
+            contactIndex,
+            goToPreviousContact,
+            goToNextContact,
+            toggleContactPanel,
+            toggleNotesPanel,
+          ),
         )}
       </div>
       {!notesPanelOpen && (
         <PanelReopenStrip label={config.notes.title} side="end" onClick={toggleNotesPanel} />
       )}
       <UtilitySidebar config={layout.utilitySidebar} />
+      <div className="contact-bottom-nav" aria-label="Contact navigation">
+        <button
+          type="button"
+          aria-label="Previous contact"
+          onClick={goToPreviousContact}
+          disabled={isFirstContact}
+        >
+          ‹
+        </button>
+        <span aria-hidden="true" />
+        <button
+          type="button"
+          aria-label="Next contact"
+          onClick={goToNextContact}
+          disabled={isLastContact}
+        >
+          ›
+        </button>
+      </div>
     </div>
   );
 }

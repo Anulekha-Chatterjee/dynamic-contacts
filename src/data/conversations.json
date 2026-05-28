@@ -1,38 +1,123 @@
 {
   "title": "Conversations",
-  "items": [
-    {
-      "id": "e1",
-      "type": "email",
-      "subject": "Set up a new time to follow up on your vehicle inquiry",
-      "sender": { "name": "Olivia John" },
-      "recipient": "To: Me",
-      "timestamp": "5 min ago",
-      "body": "Hi there,\n\nThank you for reaching out! I'd like to schedule a follow-up call to discuss the options we reviewed. Please let me know what times work best for you this week.\n\nAlso, could you send over the latest pricing sheet?",
-      "links": [{ "label": "Track Your Order", "url": "#" }],
-      "starred": false
+  "byContactId": {
+    "9f64cfc7-2f7e-4f76-bc75-55d9dfc50e3a": {
+      "items": [
+        {
+          "id": "olivia-e1",
+          "type": "email",
+          "subject": "Set up a new time to follow up on your vehicle inquiry",
+          "sender": { "name": "Olivia John" },
+          "recipient": "To: Me",
+          "timestamp": "5 min ago",
+          "body": "Hi there,\n\nThank you for reaching out! I'd like to schedule a follow-up call to discuss the options we reviewed. Please let me know what times work best for you this week.\n\nAlso, could you send over the latest pricing sheet?",
+          "links": [{ "label": "Track Your Order", "url": "#" }],
+          "starred": false
+        },
+        {
+          "id": "olivia-e2",
+          "type": "email",
+          "subject": "Re: Vehicle inspection report",
+          "sender": { "name": "Olivia John" },
+          "recipient": "To: Me",
+          "timestamp": "2 hours ago",
+          "body": "Thanks for sending the inspection report. Everything looks good. I'll discuss with my partner and get back to you by end of day.",
+          "starred": true
+        },
+        {
+          "id": "olivia-c1",
+          "type": "chat",
+          "channel": "whatsapp",
+          "sender": "Olivia",
+          "message": "Please let me know",
+          "timestamp": "11:44 AM"
+        }
+      ],
+      "composer": {
+        "placeholder": "Type your message...",
+        "typingIndicator": "Olivia is typing..."
+      }
     },
-    {
-      "id": "e2",
-      "type": "email",
-      "subject": "Re: Vehicle inspection report",
-      "sender": { "name": "Olivia John" },
-      "recipient": "To: Me",
-      "timestamp": "2 hours ago",
-      "body": "Thanks for sending the inspection report. Everything looks good. I'll discuss with my partner and get back to you by end of day.",
-      "starred": true
+    "21c5e6cc-1c38-48d8-8b63-02ab2a321f3f": {
+      "items": [
+        {
+          "id": "marcus-e1",
+          "type": "email",
+          "subject": "BMW inspection availability",
+          "sender": { "name": "Marcus Lee" },
+          "recipient": "To: Me",
+          "timestamp": "12 min ago",
+          "body": "Hi,\n\nCan you confirm whether the BMW sedan is still available for inspection this weekend? I can come by Saturday afternoon if that works.",
+          "starred": false
+        },
+        {
+          "id": "marcus-c1",
+          "type": "chat",
+          "channel": "sms",
+          "sender": "Marcus",
+          "message": "Also interested in financing options.",
+          "timestamp": "10:20 AM"
+        }
+      ],
+      "composer": {
+        "placeholder": "Message Marcus...",
+        "typingIndicator": "Marcus is typing..."
+      }
     },
-    {
-      "id": "c1",
-      "type": "chat",
-      "channel": "whatsapp",
-      "sender": "Olivia",
-      "message": "Please let me know",
-      "timestamp": "11:44 AM"
+    "5f6be7e1-7e29-4c24-9fb4-6f3442a1999e": {
+      "items": [
+        {
+          "id": "priya-e1",
+          "type": "email",
+          "subject": "Tesla SUV test drive",
+          "sender": { "name": "Priya Sharma" },
+          "recipient": "To: Me",
+          "timestamp": "35 min ago",
+          "body": "Hello,\n\nPlease reserve the Tesla SUV for a test drive on July 2. I would also like to review warranty options before the appointment.",
+          "starred": true
+        },
+        {
+          "id": "priya-c1",
+          "type": "chat",
+          "channel": "whatsapp",
+          "sender": "Priya",
+          "message": "Could you send the charging details?",
+          "timestamp": "9:48 AM"
+        }
+      ],
+      "composer": {
+        "placeholder": "Message Priya...",
+        "typingIndicator": "Priya is typing..."
+      }
+    },
+    "8df8e7af-3f13-4b8d-8a40-f58a113c50e1": {
+      "items": [
+        {
+          "id": "james-e1",
+          "type": "email",
+          "subject": "Truck options under budget",
+          "sender": { "name": "James Wright" },
+          "recipient": "To: Me",
+          "timestamp": "1 hour ago",
+          "body": "Thanks for the list.\n\nCan you narrow this down to trucks under $15k with clean service history? I am flexible on color.",
+          "starred": false
+        },
+        {
+          "id": "james-c1",
+          "type": "chat",
+          "channel": "sms",
+          "sender": "James",
+          "message": "Honda or Ford both work for me.",
+          "timestamp": "Yesterday"
+        }
+      ],
+      "composer": {
+        "placeholder": "Message James...",
+        "typingIndicator": "James is typing..."
+      }
     }
-  ],
+  },
   "composer": {
-    "placeholder": "Type your message...",
-    "typingIndicator": "Olivia is typing..."
+    "placeholder": "Type your message..."
   }
 }

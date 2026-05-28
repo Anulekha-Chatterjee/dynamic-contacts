@@ -108,6 +108,45 @@
   background: rgba(255, 255, 255, 0.08);
 }
 
+.contact-bottom-nav {
+  position: fixed;
+  left: 50%;
+  bottom: 10px;
+  z-index: 30;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #1f1f1f;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.24);
+  transform: translateX(-50%);
+}
+
+.contact-bottom-nav button {
+  width: 48px;
+  height: 42px;
+  color: #9ca3af;
+  font-size: 28px;
+  line-height: 1;
+  transition: color 0.15s, background 0.15s;
+}
+
+.contact-bottom-nav button:hover:not(:disabled) {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.contact-bottom-nav button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.contact-bottom-nav span {
+  width: 1px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
 @media (max-width: 1024px) {
   .crm-page {
     flex-direction: column;
@@ -175,5 +214,9 @@
     justify-content: center;
     padding: 8px 12px;
     box-shadow: var(--shadow-panel);
+  }
+
+  .contact-bottom-nav {
+    bottom: 72px;
   }
 }

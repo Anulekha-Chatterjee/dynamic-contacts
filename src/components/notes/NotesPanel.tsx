@@ -5,6 +5,7 @@ import './NotesPanel.css';
 
 interface NotesPanelProps {
   config: NotesConfig;
+  contactId?: string;
   onCloseClick: () => void;
 }
 
@@ -50,12 +51,15 @@ function getActiveMentionQuery(value: string): string | null {
   return match ? match[1].toLowerCase() : null;
 }
 
-export function NotesPanel({ config, onCloseClick }: NotesPanelProps) {
+export function NotesPanel({ config, contactId = 'default', onCloseClick }: NotesPanelProps) {
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const [mobileCollapsed, setMobileCollapsed] = useState(false);
-  const [notes, setNotes] = useState(config.notes);
+  const [notesByContactId, setNotesByContactId] = useState<Record<string, Note[]>>({});
+  const [draftByContactId, setDraftByContactId] = useState<Record<string, string>>({});
+  const seedNotes = config.byContactId?.[contactId] ?? config.notes;
+  const notes = notesByContactId[contactId] ?? seedNotes;
   const [addingNote, setAddingNote] = useState(false);
-  const [noteContent, setNoteContent] = useState('');
+  const noteContent = draftByContactId[contactId] ?? '';
   const activeMentionQuery = getActiveMentionQuery(noteContent);
   const mentionSuggestions = useMemo(() => {
     if (activeMentionQuery === null) return [];
@@ -75,7 +79,10 @@ export function NotesPanel({ config, onCloseClick }: NotesPanelProps) {
 
   function handleCancelNote() {
     setAddingNote(false);
-    setNoteContent('');
+    setDraftByContactId((currentDrafts) => ({
+      ...currentDrafts,
+      [contactId]: '',
+    }));
   }
 
   function handleSubmitNote(event: FormEvent<HTMLFormElement>) {
@@ -92,7 +99,10 @@ export function NotesPanel({ config, onCloseClick }: NotesPanelProps) {
       timestamp: 'Just now',
     };
 
-    setNotes((currentNotes) => [newNote, ...currentNotes]);
+    setNotesByContactId((currentNotesByContactId) => ({
+      ...currentNotesByContactId,
+      [contactId]: [newNote, ...notes],
+    }));
     handleCancelNote();
   }
 
@@ -100,7 +110,10 @@ export function NotesPanel({ config, onCloseClick }: NotesPanelProps) {
     const nextValue = noteContent.replace(/(^|\s)@[A-Za-z0-9_-]*$/, `$1@${name} `);
     const nextCursorPosition = nextValue.length;
 
-    setNoteContent(nextValue);
+    setDraftByContactId((currentDrafts) => ({
+      ...currentDrafts,
+      [contactId]: nextValue,
+    }));
     window.setTimeout(() => {
       textareaRef.current?.focus();
       textareaRef.current?.setSelectionRange(nextCursorPosition, nextCursorPosition);
@@ -144,7 +157,12 @@ export function NotesPanel({ config, onCloseClick }: NotesPanelProps) {
                 value={noteContent}
                 placeholder="Add a note... use @name to mention someone"
                 rows={4}
-                onChange={(event) => setNoteContent(event.target.value)}
+                onChange={(event) =>
+                  setDraftByContactId((currentDrafts) => ({
+                    ...currentDrafts,
+                    [contactId]: event.target.value,
+                  }))
+                }
                 autoFocus
               />
             </label>

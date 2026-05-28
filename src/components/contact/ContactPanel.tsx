@@ -25,12 +25,21 @@ const VISIBLE_TAGS_COUNT = 2;
 interface ContactPanelProps {
   contacts: ContactRecord[];
   contactFields: ContactFieldsConfig;
+  contactIndex: number;
+  onPreviousContact: () => void;
+  onNextContact: () => void;
   onBackClick: () => void;
 }
 
-export function ContactPanel({ contacts, contactFields, onBackClick }: ContactPanelProps) {
+export function ContactPanel({
+  contacts,
+  contactFields,
+  contactIndex,
+  onPreviousContact,
+  onNextContact,
+  onBackClick,
+}: ContactPanelProps) {
   const [editableContacts, setEditableContacts] = useState(contacts);
-  const [contactIndex, setContactIndex] = useState(0);
   const [activeTab, setActiveTab] = useState<string>(ACTION_TABS[0].id);
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileCollapsed, setMobileCollapsed] = useState(false);
@@ -69,14 +78,6 @@ export function ContactPanel({ contacts, contactFields, onBackClick }: ContactPa
 
   const searchPlaceholder =
     contactFields.searchPlaceholder ?? 'Search Fields and Folders';
-
-  function goToPrevious() {
-    setContactIndex((i) => Math.max(0, i - 1));
-  }
-
-  function goToNext() {
-    setContactIndex((i) => Math.min(editableContacts.length - 1, i + 1));
-  }
 
   function updateContactField(field: ResolvedContactField, value: ContactFieldValue) {
     if (!contact) return;
@@ -166,7 +167,7 @@ export function ContactPanel({ contacts, contactFields, onBackClick }: ContactPa
             <button
               type="button"
               aria-label="Previous contact"
-              onClick={goToPrevious}
+              onClick={onPreviousContact}
               disabled={contactIndex === 0}
             >
               ‹
@@ -174,7 +175,7 @@ export function ContactPanel({ contacts, contactFields, onBackClick }: ContactPa
             <button
               type="button"
               aria-label="Next contact"
-              onClick={goToNext}
+              onClick={onNextContact}
               disabled={contactIndex === editableContacts.length - 1}
             >
               ›

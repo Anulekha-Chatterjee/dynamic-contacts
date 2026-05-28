@@ -94,6 +94,7 @@ export interface Note {
 export interface NotesConfig {
   title: string;
   notes: Note[];
+  byContactId?: Record<string, Note[]>;
 }
 
 export interface ConversationEmail {
@@ -119,9 +120,17 @@ export interface ConversationChat {
 
 export type ConversationItem = ConversationEmail | ConversationChat;
 
+export interface ConversationThreadConfig {
+  items: ConversationItem[];
+  composer?: {
+    placeholder: string;
+    typingIndicator?: string;
+  };
+}
+
 export interface ConversationsConfig {
   title: string;
-  items: ConversationItem[];
+  byContactId: Record<string, ConversationThreadConfig>;
   composer: {
     placeholder: string;
     typingIndicator?: string;

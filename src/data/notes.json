@@ -17,5 +17,62 @@
       "content": "Follow up on the test drive feedback. Customer interested in the 2022 Camry Hybrid — send comparison sheet.",
       "timestamp": "3 days ago"
     }
-  ]
+  ],
+  "byContactId": {
+    "9f64cfc7-2f7e-4f76-bc75-55d9dfc50e3a": [
+      {
+        "id": "olivia-n1",
+        "content": "Olivia called to confirm her appointment for next Tuesday. She prefers morning slots between 9-11 AM.",
+        "timestamp": "2 hours ago"
+      },
+      {
+        "id": "olivia-n2",
+        "content": "Discussed financing options with @Aaron Site.",
+        "mentions": [{ "text": "@Aaron Site", "userId": "aaron" }],
+        "timestamp": "Yesterday"
+      },
+      {
+        "id": "olivia-n3",
+        "content": "Follow up on the test drive feedback. Customer interested in the 2022 Camry Hybrid.",
+        "timestamp": "3 days ago"
+      }
+    ],
+    "21c5e6cc-1c38-48d8-8b63-02ab2a321f3f": [
+      {
+        "id": "marcus-n1",
+        "content": "Marcus wants Saturday afternoon availability for the BMW inspection.",
+        "timestamp": "Today"
+      },
+      {
+        "id": "marcus-n2",
+        "content": "Send financing estimate before the visit.",
+        "timestamp": "Yesterday"
+      }
+    ],
+    "5f6be7e1-7e29-4c24-9fb4-6f3442a1999e": [
+      {
+        "id": "priya-n1",
+        "content": "Priya requested warranty details before the Tesla SUV test drive.",
+        "timestamp": "Today"
+      },
+      {
+        "id": "priya-n2",
+        "content": "Ask @Devon Lane to prepare charging options.",
+        "mentions": [{ "text": "@Devon Lane", "userId": "devon" }],
+        "timestamp": "Yesterday"
+      }
+    ],
+    "8df8e7af-3f13-4b8d-8a40-f58a113c50e1": [
+      {
+        "id": "james-n1",
+        "content": "James prefers trucks under $15k with clean service history.",
+        "timestamp": "1 day ago"
+      },
+      {
+        "id": "james-n2",
+        "content": "Compare Ford and Honda inventory before follow-up.",
+        "timestamp": "3 days ago"
+      }
+    ]
+  }
 }

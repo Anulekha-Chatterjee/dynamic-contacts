@@ -1,7 +1,7 @@
 {
   "contacts": [
     {
-      "id": "contact-olivia-john",
+      "id": "9f64cfc7-2f7e-4f76-bc75-55d9dfc50e3a",
       "owner": "Devon Lane",
       "followers": ["A", "B"],
       "tags": ["Shared Contact", "VIP", "Warm Lead", "Financing", "Test Drive", "Trade-in"],
@@ -23,7 +23,7 @@
       }
     },
     {
-      "id": "contact-marcus-lee",
+      "id": "21c5e6cc-1c38-48d8-8b63-02ab2a321f3f",
       "owner": "Sarah Chen",
       "followers": ["SC", "MK"],
       "tags": ["Lead", "Hot", "Website Inquiry", "Needs Follow-up", "SUV Buyer"],
@@ -45,7 +45,7 @@
       }
     },
     {
-      "id": "contact-priya-sharma",
+      "id": "5f6be7e1-7e29-4c24-9fb4-6f3442a1999e",
       "owner": "Devon Lane",
       "followers": ["DL"],
       "tags": ["VIP", "Referral", "High Budget", "Tesla Interest", "Appointment Set"],
@@ -67,7 +67,7 @@
       }
     },
     {
-      "id": "contact-james-wright",
+      "id": "8df8e7af-3f13-4b8d-8a40-f58a113c50e1",
       "owner": "Mike Torres",
       "followers": ["MT", "JW", "AL"],
       "tags": ["Shared Contact", "Budget Buyer", "Truck Interest", "Needs Financing"],

@@ -1,4 +1,4 @@
-import { useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
+import { useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
 import type { ConversationItem, ConversationsConfig } from '../../types/config';
 import { AvatarInitials } from '../common/AvatarInitials';
 import { IconChevron, IconConversation, IconMail, IconMore, IconSend, IconStar } from '../icons/Icons';
@@ -6,6 +6,7 @@ import './ConversationsPanel.css';
 
 interface ConversationsPanelProps {
   config: ConversationsConfig;
+  contactId?: string;
 }
 
 type EmailConversationItem = Extract<ConversationItem, { type: 'email' }>;
@@ -70,25 +71,41 @@ function ChatItem({ item }: { item: ChatConversationItem }) {
   );
 }
 
-export function ConversationsPanel({ config }: ConversationsPanelProps) {
+export function ConversationsPanel({ config, contactId = 'default' }: ConversationsPanelProps) {
   const composerRef = useRef<HTMLTextAreaElement | null>(null);
   const [mobileCollapsed, setMobileCollapsed] = useState(false);
-  const [items, setItems] = useState(config.items);
-  const [message, setMessage] = useState('');
-  const [replyTarget, setReplyTarget] = useState<EmailConversationItem | null>(null);
+  const [itemsByContactId, setItemsByContactId] = useState<Record<string, ConversationItem[]>>(
+    () => ({}),
+  );
+  const [messageByContactId, setMessageByContactId] = useState<Record<string, string>>({});
+  const [replyTargetByContactId, setReplyTargetByContactId] = useState<
+    Record<string, EmailConversationItem | null>
+  >({});
+  const threadConfig = config.byContactId[contactId];
+  const composerConfig = threadConfig?.composer ?? config.composer;
+  const seedItems = useMemo(() => threadConfig?.items ?? [], [threadConfig?.items]);
+  const items = itemsByContactId[contactId] ?? seedItems;
+  const message = messageByContactId[contactId] ?? '';
+  const replyTarget = replyTargetByContactId[contactId] ?? null;
 
   function toggleMobilePanel() {
     setMobileCollapsed((collapsed) => !collapsed);
   }
 
   function handleReply(item: EmailConversationItem) {
-    setReplyTarget(item);
+    setReplyTargetByContactId((currentTargets) => ({
+      ...currentTargets,
+      [contactId]: item,
+    }));
     setMobileCollapsed(false);
     window.setTimeout(() => composerRef.current?.focus(), 0);
   }
 
   function clearReplyTarget() {
-    setReplyTarget(null);
+    setReplyTargetByContactId((currentTargets) => ({
+      ...currentTargets,
+      [contactId]: null,
+    }));
   }
 
   function handleSubmitMessage(event?: FormEvent<HTMLFormElement>) {
@@ -106,9 +123,15 @@ export function ConversationsPanel({ config }: ConversationsPanelProps) {
       timestamp: replyTarget ? `Just now · Re: ${replyTarget.subject}` : 'Just now',
     };
 
-    setItems((currentItems) => [...currentItems, newMessage]);
-    setMessage('');
-    setReplyTarget(null);
+    setItemsByContactId((currentItemsByContactId) => ({
+      ...currentItemsByContactId,
+      [contactId]: [...items, newMessage],
+    }));
+    setMessageByContactId((currentMessages) => ({
+      ...currentMessages,
+      [contactId]: '',
+    }));
+    clearReplyTarget();
   }
 
   function handleComposerKeyDown(event: KeyboardEvent<HTMLTextAreaElement>) {
@@ -148,8 +171,8 @@ export function ConversationsPanel({ config }: ConversationsPanelProps) {
       </div>
 
       <footer className="conversations-panel__composer">
-        {config.composer.typingIndicator && (
-          <p className="typing-indicator">{config.composer.typingIndicator}</p>
+        {composerConfig.typingIndicator && (
+          <p className="typing-indicator">{composerConfig.typingIndicator}</p>
         )}
         {replyTarget && (
           <div className="reply-context">
@@ -166,11 +189,16 @@ export function ConversationsPanel({ config }: ConversationsPanelProps) {
           <textarea
             ref={composerRef}
             placeholder={
-              replyTarget ? `Reply to ${replyTarget.sender.name}...` : config.composer.placeholder
+              replyTarget ? `Reply to ${replyTarget.sender.name}...` : composerConfig.placeholder
             }
             rows={1}
             value={message}
-            onChange={(event) => setMessage(event.target.value)}
+            onChange={(event) =>
+              setMessageByContactId((currentMessages) => ({
+                ...currentMessages,
+                [contactId]: event.target.value,
+              }))
+            }
             onKeyDown={handleComposerKeyDown}
           />
           <div className="composer-box__tools">
