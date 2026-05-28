@@ -30,4 +30,25 @@ describe('PageLayout', () => {
       screen.queryByText('Set up a new time to follow up on your vehicle inquiry'),
     ).not.toBeInTheDocument();
   });
+
+  it('switches layout column config at runtime', async () => {
+    const user = userEvent.setup();
+    const { container } = render(<PageLayout config={config} />);
+    const grid = container.querySelector<HTMLElement>('.crm-page__grid');
+
+    expect(grid).not.toBeNull();
+    expect(grid).toHaveStyle({ gridTemplateColumns: '28fr 44fr 28fr' });
+    expect(screen.getByText('Contact Details')).toBeInTheDocument();
+    expect(screen.getByText('Notes')).toBeInTheDocument();
+
+    await user.click(screen.getByRole('button', { name: 'Conversation' }));
+
+    expect(grid).toHaveStyle({ gridTemplateColumns: '100fr' });
+    expect(screen.getByRole('button', { name: 'Conversation' })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    );
+    expect(screen.queryByText('Contact Details')).not.toBeInTheDocument();
+    expect(screen.queryByText('Notes')).not.toBeInTheDocument();
+  });
 });

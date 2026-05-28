@@ -117,6 +117,10 @@ export interface ConversationChat {
   sender: string;
   message: string;
   timestamp: string;
+  replyTo?: {
+    id: string;
+    label: string;
+  };
 }
 
 export type ConversationItem = ConversationEmail | ConversationChat;

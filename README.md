@@ -1,8 +1,10 @@
 # Dynamic Contact Details Page
 
-A config-driven CRM contact details view built for rendering Contacts. The UI layout, contact fields/folders, conversations, and notes are rendered from JSON through a local mock API service, simulating how real CRMs define custom pages.
+A config-driven CRM contact details interface built with React, TypeScript, and Vite. The app renders the page layout, contact fields, grouped folders, conversations, notes, tags, and sidebar navigation from JSON seed data through a local mock API layer.
 
-## Quick start
+The goal is to demonstrate a dynamic CRM-style UI with clean component boundaries, mocked API loading, cached responses, reusable field rendering, per-contact state, and responsive behavior.
+
+## Quick Start
 
 ```bash
 npm install
@@ -11,80 +13,139 @@ npm run dev
 
 Open [http://localhost:5173](http://localhost:5173).
 
-## Architecture
+## Scripts
 
-```
+- `npm run dev` - start the local Vite dev server
+- `npm run test` - run unit tests with Vitest
+- `npm run test:watch` - run tests in watch mode
+- `npm run lint` - run ESLint
+- `npm run build` - create the production build in `dist/`
+- `npm run preview` - preview the production build locally
+
+## Project Structure
+
+```txt
 src/
-├── data/           # JSON configuration (edit these to change the UI)
-│   ├── layout.json
-│   ├── contactFields.json
-│   ├── contactData.json
-│   ├── notes.json
-│   └── conversations.json
-├── types/          # TypeScript contracts for all config shapes
-├── config/         # Loads and exports typed JSON seed data
-├── services/       # Mock API + response caching
+├── config/         # Loads typed JSON seed config
+├── data/           # JSON data that drives layout, contacts, notes, conversations
+├── services/       # Mock API boundary and localStorage caching
+├── types/          # TypeScript contracts for config/data shapes
+├── utils/          # Field resolving and formatting helpers
+├── test/           # Test setup
 └── components/
-    ├── layout/     # Page grid + utility sidebar
-    ├── contact/    # Profile, metadata, dynamic field folders
+    ├── common/     # Shared UI primitives
+    ├── contact/    # Contact profile, tags, folders, field rows
     ├── conversations/
+    ├── icons/
+    ├── layout/     # Page grid, utility sidebar, panel controls
     └── notes/
 ```
 
-### Config-driven rendering
+## Data Files
 
-| JSON file | Purpose |
-|-----------|---------|
-| `layout.json` | Column widths (%), which panels appear, utility sidebar icons (converted to `fr` at runtime) |
-| `contactFields.json` | Form-style field schema (folders, keys, labels, types, options) |
-| `contactData.json` | Contact records (`values` keyed by field `key`, plus owner/followers/tags) |
-| `notes.json` | Note cards with optional @mentions |
-| `conversations.json` | Email threads and chat bubbles (middle column) |
+| File | Purpose |
+| --- | --- |
+| `src/data/layout.json` | Defines the three-column layout, column visibility, utility sidebar icons, and the default active sidebar item |
+| `src/data/contactFields.json` | Defines contact field folders, labels, field types, options, and folder actions |
+| `src/data/contactData.json` | Contains contact records, UUID-style contact IDs, owners, followers, tags, and field values |
+| `src/data/conversations.json` | Stores per-contact conversation threads under `byContactId` |
+| `src/data/notes.json` | Stores default notes and per-contact notes under `byContactId` |
 
-`fetchAppConfig` reads the local JSON seed data through a mock API boundary, simulates async latency, and caches successful responses in `localStorage`. `PageLayout` receives the loaded config and maps each column's `component` key to the correct panel. `FieldFolder` and `FieldRow` render from `contactFields.json` + values from `contactData.json`—add a field in JSON and it appears without code changes.
+Contact IDs are UUID-style strings instead of name-based slugs, so multiple contacts can share the same name without breaking notes or conversations.
 
-## Features
+## Key Features
 
-- JSON-driven CRM layout with Contact, Conversations, Notes, and utility sidebar panels
-- Async mock API loading with localStorage response caching
-- Inline contact field editing from the folder `+ Add` action
-- Configurable folder actions through `contactFields.json`
-- Search/filter across contact fields and folders
-- Expandable contact tags: show two by default, then reveal all tags from actual contact data
-- Contact pagination across mock contacts
-- Conversation composer for adding new replies/messages
-- Email `Reply` action that focuses the composer and shows reply context
-- Notes composer for adding new notes
-- Inline `@mention` parsing and highlighting in notes
-- Mention suggestion dropdown with hardcoded mock users when typing `@`
-- Responsive tablet/mobile layout with stacked panels
-- Mobile bottom utility sidebar
+- JSON-driven CRM layout with Contact Details, Conversations, Notes, and utility sidebar panels
+- Mock API service that simulates async loading and caches successful responses in `localStorage`
+- Dynamic field folders and rows generated from `contactFields.json`
+- Inline contact editing from each folder `+ Add` action
+- Deferred edit commit: field changes are drafted locally and only update shared contact state after `Done`
+- First Name and Last Name render side by side in view and edit modes
+- Contact tags show two by default, expand to reveal more, and can be deleted
+- Contact pagination with previous/next controls
+- Runtime layout toggle between balanced and conversation-focused column configs
+- Per-contact conversations and per-contact notes
+- Conversation composer for adding messages
+- Email reply flow with focused composer, reply context, and a WhatsApp-style reply preview link on sent replies
+- Conversation feed auto-scrolls to the newest message
+- Contact name edits sync into the conversation panel after `Done`
+- Notes composer for adding notes
+- Inline `@mention` parsing in a single note textbox
+- Mention dropdown with mock users while typing `@`
+- Responsive tablet/mobile layout that stacks panels vertically
+- Mobile utility sidebar fixed to the bottom
 - Mobile panel collapse/expand controls using matching chevron styling
+- Utility sidebar with Documents selected by default
 
-### Mock API and caching
+## Mock API and Caching
 
-The mock API uses local JSON files as the backend seed data and caches successful responses in localStorage for fallback behavior.
+`fetchAppConfig` in `src/services/mockApi.ts` acts as the API boundary.
 
-- Simulates API latency before returning data
-- Caches the combined app config under `dynamic-contact-details:app-config`
-- Keeps API-style loading/error handling in `App.tsx`
+It:
 
-### Editing behavior
+- waits briefly to simulate network latency
+- returns the typed app config loaded from local JSON
+- caches successful responses in `localStorage`
+- keeps loading and error handling in `App.tsx` API-shaped, even though this project uses local mock data
 
-Contact field edits, added notes, conversation replies, and expanded tags are stored in component state. They update immediately in the UI, but they intentionally do not write back to the JSON files. This keeps the app lightweight while still demonstrating interactive CRM behavior on top of mocked API data.
+The cache key is:
 
-### Responsive behavior
+```txt
+dynamic-contact-details:app-config
+```
 
-Desktop uses the configured multi-column layout from `layout.json`. At tablet/mobile widths, the panels stack vertically in this order:
+## State Behavior
+
+The JSON files are seed data. Runtime interactions are stored in React state and do not write back to JSON.
+
+- Contact field edits are stored at the page level after `Done`
+- Tag deletions update the active contact in page state
+- New notes are stored per contact in the Notes panel state
+- New conversation messages are stored per contact in the Conversations panel state
+- Reply context is cleared after a message is sent
+
+This keeps the app lightweight while still showing realistic CRM interactions on top of mocked API data.
+
+## Responsive Behavior
+
+Desktop uses the configured multi-column layout from `layout.json`.
+
+The layout mode toggle can switch the desktop layout at runtime:
+
+- `Balanced` uses the default JSON column widths
+- `Conversation` applies an alternate JSON-shaped layout that hides Contact Details and Notes, then expands Conversations to the full workspace
+
+On tablet/mobile widths, panels stack vertically:
 
 1. Contact Details
 2. Conversations
 3. Notes
 
-The utility sidebar becomes a fixed bottom bar on smaller screens. Contact details remain expanded by default on mobile, while Conversations and Notes can collapse/expand through their header chevrons.
+The utility sidebar moves to a fixed bottom bar. Contact Details stays expanded by default on mobile, while Conversations and Notes can collapse or expand through their header chevrons.
 
+## Utility Sidebar
 
-### Customization example
+The right-side utility sidebar represents secondary CRM navigation:
+
+- Activity
+- Network
+- Tasks
+- Documents
+- Calendar
+
+`Documents` is selected by default through `activeIconId` in `layout.json`. The icons are visual navigation scaffolding for this assignment and do not open separate routes yet.
+
+## Contact Tabs
+
+The Contact panel includes CRM-style tabs:
+
+- `All Fields` - the active implemented view showing all dynamic field folders
+- `DND` - intended for do-not-disturb/contact preference settings
+- `Actions` - intended for quick CRM actions such as scheduling, assigning, or follow-up tasks
+
+Only `All Fields` is currently functionally implemented. The other tabs are present to match the CRM-style UI pattern and can be wired later if needed.
+
+## Customization Examples
 
 Add a field in `src/data/contactFields.json`:
 
@@ -98,37 +159,113 @@ Add a field in `src/data/contactFields.json`:
 }
 ```
 
-Then add `"leadSource": "Website"` to each contact's `values` in `contactData.json`.
-
-Hide the notes column in `src/data/layout.json`:
+Then add the matching value to a contact in `src/data/contactData.json`:
 
 ```json
-{ "id": "notes", "component": "notes", "width": "28%", "visible": false }
+{
+  "values": {
+    "leadSource": "Website"
+  }
+}
 ```
 
-## Scripts
+Hide a panel in `src/data/layout.json`:
 
-- `npm run dev` — development server
-- `npm run build` — production build
-- `npm run preview` — preview production build
+```json
+{
+  "id": "notes",
+  "component": "notes",
+  "width": "28%",
+  "visible": false
+}
+```
 
-## Tech stack
+Change the active utility sidebar icon:
 
-- React 19 + TypeScript
+```json
+{
+  "utilitySidebar": {
+    "activeIconId": "docs"
+  }
+}
+```
+
+## Testing
+
+The project includes unit tests for the major interactive behavior:
+
+- field formatting and field-folder resolving
+- contact tag expansion and deletion
+- deferred field editing
+- per-contact conversations
+- sending messages and reply preview links
+- per-contact notes and mentions
+- page-level contact navigation syncing contact details, notes, and conversations
+- runtime layout switching between balanced and full conversation-focus configs
+
+Run:
+
+```bash
+npm run test
+```
+
+## Deployment
+
+This is a Vite app, so production deployment uses:
+
+```txt
+Build command: npm run build
+Output directory: dist
+```
+
+For Vercel or Netlify:
+
+1. Push the repo to GitHub.
+2. Import the repo.
+3. Use the Vite defaults.
+4. Deploy from the connected branch.
+
+Before deploying:
+
+```bash
+npm run test
+npm run lint
+npm run build
+```
+
+## Known Issues / Intentional Scope
+
+- Runtime edits are stored in React state only. Contact edits, deleted tags, added notes, and sent messages do not write back to the JSON seed files.
+- `DND` and `Actions` are CRM-style tabs included for layout fidelity, but only `All Fields` is currently wired as a functional view.
+- Utility sidebar icons are visual navigation scaffolding. `Documents` is highlighted by default, but the sidebar does not open separate routes or panels.
+- The mock API uses local JSON files and simulated latency instead of a real backend service.
+
+## Tech Stack
+
+- React 19
+- TypeScript
 - Vite
-- CSS (no UI library—matches mock fidelity with custom styles)
+- Vitest
+- Testing Library
+- CSS modules by component stylesheet convention
 
-## Assignment checklist
+## Assignment Checklist
 
-- [x] Modular component architecture
-- [x] Page layout from JSON
-- [x] Contact fields & folders from JSON
-- [x] Notes from JSON
-- [x] Mock API service with cached responses
-- [x] Search/filter fields by folder or label
+- [x] Code organization and modular component structure
+- [x] Mock API boundary
+- [x] Cached mock API responses
+- [x] Dynamic rendering from JSON
+- [x] Nested/grouped field folders
+- [x] Per-contact conversations and notes
+- [x] Reusable contact field rows and folders
 - [x] Inline contact editing
+- [x] Deferred save behavior for contact edits
+- [x] Tag expansion and deletion
 - [x] Add notes with inline mentions
-- [x] Add conversation replies
-- [x] Expand/collapse actual contact tags
+- [x] Add conversation messages and replies
+- [x] Reply preview link for sent replies
 - [x] Responsive mobile/tablet stacked layout
-- [x] UI aligned with provided screenshot
+- [x] Runtime layout toggle simulating a JSON layout switch
+- [x] Mobile bottom utility sidebar
+- [x] Hover/active states and consistent UI styling
+- [x] Unit tests for core behavior

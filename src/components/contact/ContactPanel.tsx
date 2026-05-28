@@ -29,6 +29,12 @@ interface ContactPanelProps {
   onPreviousContact: () => void;
   onNextContact: () => void;
   onBackClick: () => void;
+  onContactFieldUpdate: (
+    contactId: string,
+    field: ResolvedContactField,
+    value: ContactFieldValue,
+  ) => void;
+  onContactTagsChange: (contactId: string, tags: string[]) => void;
 }
 
 export function ContactPanel({
@@ -38,15 +44,16 @@ export function ContactPanel({
   onPreviousContact,
   onNextContact,
   onBackClick,
+  onContactFieldUpdate,
+  onContactTagsChange,
 }: ContactPanelProps) {
-  const [editableContacts, setEditableContacts] = useState(contacts);
   const [activeTab, setActiveTab] = useState<string>(ACTION_TABS[0].id);
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileCollapsed, setMobileCollapsed] = useState(false);
   const [expandedTagContactIds, setExpandedTagContactIds] = useState<Set<string>>(
     () => new Set(),
   );
-  const contact = editableContacts[contactIndex];
+  const contact = contacts[contactIndex];
   const fullName = contact ? getContactDisplayName(contact) : '';
   const phone = contact ? getContactPhone(contact) : '';
   const tagsExpanded = contact ? expandedTagContactIds.has(contact.id) : false;
@@ -82,19 +89,7 @@ export function ContactPanel({
   function updateContactField(field: ResolvedContactField, value: ContactFieldValue) {
     if (!contact) return;
 
-    setEditableContacts((currentContacts) =>
-      currentContacts.map((currentContact) =>
-        currentContact.id === contact.id
-          ? {
-              ...currentContact,
-              values: {
-                ...currentContact.values,
-                [field.key]: value,
-              },
-            }
-          : currentContact,
-      ),
-    );
+    onContactFieldUpdate(contact.id, field, value);
   }
 
   function handlePanelToggle() {
@@ -118,6 +113,15 @@ export function ContactPanel({
 
       return nextIds;
     });
+  }
+
+  function removeTag(tagToRemove: string) {
+    if (!contact) return;
+
+    onContactTagsChange(
+      contact.id,
+      contact.tags.filter((tag) => tag !== tagToRemove),
+    );
   }
 
   if (!contact) {
@@ -176,7 +180,7 @@ export function ContactPanel({
               type="button"
               aria-label="Next contact"
               onClick={onNextContact}
-              disabled={contactIndex === editableContacts.length - 1}
+              disabled={contactIndex === contacts.length - 1}
             >
               ›
             </button>
@@ -224,7 +228,11 @@ export function ContactPanel({
                 {visibleTags.map((tag) => (
                   <span key={tag} className="tag">
                     {tag}
-                    <button type="button" aria-label={`Remove ${tag}`}>
+                    <button
+                      type="button"
+                      aria-label={`Remove ${tag}`}
+                      onClick={() => removeTag(tag)}
+                    >
                       ×
                     </button>
                   </span>

@@ -5,6 +5,7 @@ import './ContactPanel.css';
 interface FieldRowProps {
   field: ResolvedContactField;
   editing?: boolean;
+  value?: ContactFieldValue;
   onValueChange?: (field: ResolvedContactField, value: ContactFieldValue) => void;
 }
 
@@ -33,10 +34,11 @@ function parseEditableValue(field: ResolvedContactField, value: string): Contact
   return value;
 }
 
-export function FieldRow({ field, editing = false, onValueChange }: FieldRowProps) {
+export function FieldRow({ field, editing = false, value, onValueChange }: FieldRowProps) {
   const { displayValue } = field;
   const isEmpty = !displayValue;
-  const editableValue = getEditableValue(field);
+  const editableValue =
+    value === undefined ? getEditableValue(field) : Array.isArray(value) ? value.join(', ') : value;
   const isNameField = field.key === 'firstName' || field.key === 'lastName';
   const isFullWidth =
     field.type === 'phone' ||

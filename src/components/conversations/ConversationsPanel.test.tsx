@@ -49,11 +49,38 @@ describe('ConversationsPanel', () => {
   it('sets reply context when replying to an email', async () => {
     const user = userEvent.setup();
 
-    render(<ConversationsPanel config={conversationsConfig} contactId={PRIYA_ID} />);
+    render(
+      <ConversationsPanel
+        config={conversationsConfig}
+        contactId={PRIYA_ID}
+        contactName="Priya Sharma"
+      />,
+    );
 
     await user.click(screen.getByRole('button', { name: 'Reply' }));
 
     expect(screen.getByText('Replying to: Tesla SUV test drive')).toBeInTheDocument();
     expect(screen.getByPlaceholderText('Reply to Priya Sharma...')).toHaveFocus();
+  });
+
+  it('adds a reply link to sent replies', async () => {
+    const user = userEvent.setup();
+
+    render(
+      <ConversationsPanel
+        config={conversationsConfig}
+        contactId={PRIYA_ID}
+        contactName="Priya Sharma"
+      />,
+    );
+
+    await user.click(screen.getByRole('button', { name: 'Reply' }));
+    await user.type(screen.getByPlaceholderText('Reply to Priya Sharma...'), 'That works for me');
+    await user.click(screen.getByRole('button', { name: 'Send' }));
+
+    expect(
+      screen.getByRole('button', { name: 'Replying to Tesla SUV test drive' }),
+    ).toBeInTheDocument();
+    expect(screen.getByText(/That works for me/)).toBeInTheDocument();
   });
 });

@@ -1,4 +1,11 @@
-import { useMemo, useRef, useState, type FormEvent, type KeyboardEvent } from 'react';
+import {
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type FormEvent,
+  type KeyboardEvent,
+} from 'react';
 import type { ConversationItem, ConversationsConfig } from '../../types/config';
 import { AvatarInitials } from '../common/AvatarInitials';
 import { IconChevron, IconConversation, IconMail, IconMore, IconSend, IconStar } from '../icons/Icons';
@@ -7,6 +14,7 @@ import './ConversationsPanel.css';
 interface ConversationsPanelProps {
   config: ConversationsConfig;
   contactId?: string;
+  contactName?: string;
 }
 
 type EmailConversationItem = Extract<ConversationItem, { type: 'email' }>;
@@ -14,22 +22,26 @@ type ChatConversationItem = Extract<ConversationItem, { type: 'chat' }>;
 
 function EmailItem({
   item,
+  displayName,
   onReply,
 }: {
   item: EmailConversationItem;
+  displayName?: string;
   onReply: (item: EmailConversationItem) => void;
 }) {
   const paragraphs = item.body.split('\n');
+  const senderName = displayName || item.sender.name;
+
   return (
-    <article className="email-card">
+    <article className="email-card" id={`conversation-${item.id}`}>
       <div className="email-card__subject">
         <span>{item.subject}</span>
         <button type="button" aria-label="Expand">⤢</button>
       </div>
       <div className="email-card__meta">
-        <AvatarInitials name={item.sender.name} size="xl" />
+        <AvatarInitials name={senderName} size="xl" />
         <div className="email-card__sender">
-          <strong>{item.sender.name}</strong>
+          <strong>{senderName}</strong>
           <span>{item.recipient}</span>
         </div>
         <span className="email-card__time">{item.timestamp}</span>
@@ -59,20 +71,48 @@ function EmailItem({
   );
 }
 
-function ChatItem({ item }: { item: ChatConversationItem }) {
+function ChatItem({
+  item,
+  contactName,
+  onReplyLinkClick,
+}: {
+  item: ChatConversationItem;
+  contactName?: string;
+  onReplyLinkClick: (itemId: string) => void;
+}) {
+  const senderName = item.sender === 'You' ? item.sender : contactName || item.sender;
+
   return (
-    <div className="chat-bubble">
+    <div className="chat-bubble" id={`conversation-${item.id}`}>
       {item.channel === 'whatsapp' && <span className="chat-bubble__icon">💬</span>}
       <div className="chat-bubble__content">
-        <span className="chat-bubble__sender">{item.sender}:</span> {item.message}
+        {item.replyTo && (
+          <button
+            type="button"
+            className="chat-bubble__reply-link"
+            onClick={() => onReplyLinkClick(item.replyTo?.id ?? '')}
+          >
+            Replying to {item.replyTo.label}
+          </button>
+        )}
+        <span className="chat-bubble__sender">{senderName}:</span> {item.message}
         <span className="chat-bubble__time">{item.timestamp}</span>
       </div>
     </div>
   );
 }
 
-export function ConversationsPanel({ config, contactId = 'default' }: ConversationsPanelProps) {
+function getContactFirstName(contactName?: string) {
+  return contactName?.trim().split(/\s+/)[0] ?? '';
+}
+
+export function ConversationsPanel({
+  config,
+  contactId = 'default',
+  contactName,
+}: ConversationsPanelProps) {
   const composerRef = useRef<HTMLTextAreaElement | null>(null);
+  const feedRef = useRef<HTMLDivElement | null>(null);
   const [mobileCollapsed, setMobileCollapsed] = useState(false);
   const [itemsByContactId, setItemsByContactId] = useState<Record<string, ConversationItem[]>>(
     () => ({}),
@@ -87,6 +127,22 @@ export function ConversationsPanel({ config, contactId = 'default' }: Conversati
   const items = itemsByContactId[contactId] ?? seedItems;
   const message = messageByContactId[contactId] ?? '';
   const replyTarget = replyTargetByContactId[contactId] ?? null;
+  const firstName = getContactFirstName(contactName);
+  const typingIndicator = composerConfig.typingIndicator && firstName
+    ? `${firstName} is typing...`
+    : composerConfig.typingIndicator;
+  const placeholder = firstName ? `Message ${firstName}...` : composerConfig.placeholder;
+
+  useEffect(() => {
+    const feed = feedRef.current;
+    if (!feed) return;
+
+    if (typeof feed.scrollTo === 'function') {
+      feed.scrollTo({ top: feed.scrollHeight, behavior: 'smooth' });
+    } else {
+      feed.scrollTop = feed.scrollHeight;
+    }
+  }, [contactId, items.length]);
 
   function toggleMobilePanel() {
     setMobileCollapsed((collapsed) => !collapsed);
@@ -120,7 +176,13 @@ export function ConversationsPanel({ config, contactId = 'default' }: Conversati
       channel: 'sms',
       sender: 'You',
       message: trimmedMessage,
-      timestamp: replyTarget ? `Just now · Re: ${replyTarget.subject}` : 'Just now',
+      timestamp: 'Just now',
+      replyTo: replyTarget
+        ? {
+            id: replyTarget.id,
+            label: replyTarget.subject,
+          }
+        : undefined,
     };
 
     setItemsByContactId((currentItemsByContactId) => ({
@@ -139,6 +201,15 @@ export function ConversationsPanel({ config, contactId = 'default' }: Conversati
       event.preventDefault();
       handleSubmitMessage();
     }
+  }
+
+  function scrollToConversationItem(itemId: string) {
+    if (!itemId) return;
+
+    document.getElementById(`conversation-${itemId}`)?.scrollIntoView({
+      behavior: 'smooth',
+      block: 'center',
+    });
   }
 
   return (
@@ -160,19 +231,29 @@ export function ConversationsPanel({ config, contactId = 'default' }: Conversati
         </button>
       </header>
 
-      <div className="conversations-panel__feed">
+      <div className="conversations-panel__feed" ref={feedRef}>
         {items.map((item) =>
           item.type === 'email' ? (
-            <EmailItem key={item.id} item={item} onReply={handleReply} />
+            <EmailItem
+              key={item.id}
+              item={item}
+              displayName={contactName}
+              onReply={handleReply}
+            />
           ) : (
-            <ChatItem key={item.id} item={item} />
+            <ChatItem
+              key={item.id}
+              item={item}
+              contactName={firstName}
+              onReplyLinkClick={scrollToConversationItem}
+            />
           ),
         )}
       </div>
 
       <footer className="conversations-panel__composer">
-        {composerConfig.typingIndicator && (
-          <p className="typing-indicator">{composerConfig.typingIndicator}</p>
+        {typingIndicator && (
+          <p className="typing-indicator">{typingIndicator}</p>
         )}
         {replyTarget && (
           <div className="reply-context">
@@ -189,7 +270,9 @@ export function ConversationsPanel({ config, contactId = 'default' }: Conversati
           <textarea
             ref={composerRef}
             placeholder={
-              replyTarget ? `Reply to ${replyTarget.sender.name}...` : composerConfig.placeholder
+              replyTarget
+                ? `Reply to ${contactName || replyTarget.sender.name}...`
+                : placeholder
             }
             rows={1}
             value={message}

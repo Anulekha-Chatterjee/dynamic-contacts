@@ -1,6 +1,13 @@
 import { useMemo, useState } from 'react';
-import type { AppConfig, LayoutColumn } from '../../types/config';
+import type {
+  AppConfig,
+  ContactFieldValue,
+  ContactRecord,
+  LayoutColumn,
+  ResolvedContactField,
+} from '../../types/config';
 import { buildGridTemplateColumns } from '../../utils/buildGridTemplateColumns';
+import { getContactDisplayName } from '../../utils/resolveFields';
 import { ContactPanel } from '../contact/ContactPanel';
 import { ConversationsPanel } from '../conversations/ConversationsPanel';
 import { NotesPanel } from '../notes/NotesPanel';
@@ -17,6 +24,23 @@ interface PageLayoutProps {
   config: AppConfig;
 }
 
+type LayoutMode = 'balanced' | 'conversation';
+
+const LAYOUT_MODES: Array<{ id: LayoutMode; label: string }> = [
+  { id: 'balanced', label: 'Balanced' },
+  { id: 'conversation', label: 'Conversation' },
+];
+
+function getRuntimeColumns(columns: LayoutColumn[], layoutMode: LayoutMode) {
+  if (layoutMode === 'balanced') return columns;
+
+  return columns.map((column) =>
+    column.component === 'conversations'
+      ? { ...column, width: '100%', visible: true }
+      : { ...column, visible: false },
+  );
+}
+
 function isColumnVisible(column: LayoutColumn, panels: PanelVisibility): boolean {
   if (!column.visible) return false;
   if (column.component === 'contact' && !panels.contactPanelOpen) return false;
@@ -26,12 +50,19 @@ function isColumnVisible(column: LayoutColumn, panels: PanelVisibility): boolean
 
 function renderColumn(
   config: AppConfig,
+  contacts: ContactRecord[],
   column: LayoutColumn,
   panels: PanelVisibility,
   contactIndex: number,
   onPreviousContact: () => void,
   onNextContact: () => void,
   onContactPanelBack: () => void,
+  onContactFieldUpdate: (
+    contactId: string,
+    field: ResolvedContactField,
+    value: ContactFieldValue,
+  ) => void,
+  onContactTagsChange: (contactId: string, tags: string[]) => void,
   onNotesPanelClose: () => void,
 ) {
   if (!isColumnVisible(column, panels)) return null;
@@ -41,12 +72,14 @@ function renderColumn(
       return (
         <ContactPanel
           key={column.id}
-          contacts={config.contactData.contacts}
+          contacts={contacts}
           contactFields={config.contactFields}
           contactIndex={contactIndex}
           onPreviousContact={onPreviousContact}
           onNextContact={onNextContact}
           onBackClick={onContactPanelBack}
+          onContactFieldUpdate={onContactFieldUpdate}
+          onContactTagsChange={onContactTagsChange}
         />
       );
     case 'conversations':
@@ -54,7 +87,8 @@ function renderColumn(
         <ConversationsPanel
           key={column.id}
           config={config.conversations}
-          contactId={config.contactData.contacts[contactIndex]?.id}
+          contactId={contacts[contactIndex]?.id}
+          contactName={contacts[contactIndex] ? getContactDisplayName(contacts[contactIndex]) : ''}
         />
       );
     case 'notes':
@@ -62,7 +96,7 @@ function renderColumn(
         <NotesPanel
           key={column.id}
           config={config.notes}
-          contactId={config.contactData.contacts[contactIndex]?.id}
+          contactId={contacts[contactIndex]?.id}
           onCloseClick={onNotesPanelClose}
         />
       );
@@ -73,7 +107,9 @@ function renderColumn(
 
 export function PageLayout({ config }: PageLayoutProps) {
   const { layout } = config;
+  const [contacts, setContacts] = useState(config.contactData.contacts);
   const [contactIndex, setContactIndex] = useState(0);
+  const [layoutMode, setLayoutMode] = useState<LayoutMode>('balanced');
   const [contactPanelOpen, setContactPanelOpen] = useState(true);
   const [notesPanelOpen, setNotesPanelOpen] = useState(true);
 
@@ -82,9 +118,14 @@ export function PageLayout({ config }: PageLayoutProps) {
     [contactPanelOpen, notesPanelOpen],
   );
 
+  const runtimeColumns = useMemo(
+    () => getRuntimeColumns(layout.columns, layoutMode),
+    [layout.columns, layoutMode],
+  );
+
   const visibleColumns = useMemo(
-    () => layout.columns.filter((c) => isColumnVisible(c, panelVisibility)),
-    [layout.columns, panelVisibility],
+    () => runtimeColumns.filter((c) => isColumnVisible(c, panelVisibility)),
+    [runtimeColumns, panelVisibility],
   );
 
   const gridTemplateColumns = useMemo(
@@ -105,11 +146,44 @@ export function PageLayout({ config }: PageLayoutProps) {
   }
 
   function goToNextContact() {
-    setContactIndex((index) => Math.min(config.contactData.contacts.length - 1, index + 1));
+    setContactIndex((index) => Math.min(contacts.length - 1, index + 1));
+  }
+
+  function updateContactField(
+    contactId: string,
+    field: ResolvedContactField,
+    value: ContactFieldValue,
+  ) {
+    setContacts((currentContacts) =>
+      currentContacts.map((contact) =>
+        contact.id === contactId
+          ? {
+              ...contact,
+              values: {
+                ...contact.values,
+                [field.key]: value,
+              },
+            }
+          : contact,
+      ),
+    );
+  }
+
+  function updateContactTags(contactId: string, tags: string[]) {
+    setContacts((currentContacts) =>
+      currentContacts.map((contact) =>
+        contact.id === contactId
+          ? {
+              ...contact,
+              tags,
+            }
+          : contact,
+      ),
+    );
   }
 
   const isFirstContact = contactIndex === 0;
-  const isLastContact = contactIndex === config.contactData.contacts.length - 1;
+  const isLastContact = contactIndex === contacts.length - 1;
 
   return (
     <div className="crm-page">
@@ -120,19 +194,39 @@ export function PageLayout({ config }: PageLayoutProps) {
           onClick={toggleContactPanel}
         />
       )}
-      <div className="crm-page__grid" style={{ gridTemplateColumns }}>
-        {layout.columns.map((column) =>
-          renderColumn(
-            config,
-            column,
-            panelVisibility,
-            contactIndex,
-            goToPreviousContact,
-            goToNextContact,
-            toggleContactPanel,
-            toggleNotesPanel,
-          ),
-        )}
+      <div className="crm-page__workspace">
+        <div className="layout-toggle" aria-label="Layout mode">
+          {LAYOUT_MODES.map((mode) => (
+            <button
+              key={mode.id}
+              type="button"
+              className={`layout-toggle__button ${
+                layoutMode === mode.id ? 'layout-toggle__button--active' : ''
+              }`}
+              onClick={() => setLayoutMode(mode.id)}
+              aria-pressed={layoutMode === mode.id}
+            >
+              {mode.label}
+            </button>
+          ))}
+        </div>
+        <div className="crm-page__grid" style={{ gridTemplateColumns }}>
+          {runtimeColumns.map((column) =>
+            renderColumn(
+              config,
+              contacts,
+              column,
+              panelVisibility,
+              contactIndex,
+              goToPreviousContact,
+              goToNextContact,
+              toggleContactPanel,
+              updateContactField,
+              updateContactTags,
+              toggleNotesPanel,
+            ),
+          )}
+        </div>
       </div>
       {!notesPanelOpen && (
         <PanelReopenStrip label={config.notes.title} side="end" onClick={toggleNotesPanel} />
