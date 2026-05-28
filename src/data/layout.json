@@ -1,8 +1,76 @@
 {
   "columns": [
-    { "id": "contact", "component": "contact", "width": "28%", "visible": true },
+    {
+      "id": "contact",
+      "component": "contact",
+      "width": "28%",
+      "visible": true,
+      "collapsible": true,
+      "reopenLabel": "Contact Details",
+      "reopenSide": "start"
+    },
     { "id": "conversations", "component": "conversations", "width": "44%", "visible": true },
-    { "id": "notes", "component": "notes", "width": "28%", "visible": true }
+    {
+      "id": "notes",
+      "component": "notes",
+      "width": "28%",
+      "visible": true,
+      "collapsible": true,
+      "reopenLabel": "Notes",
+      "reopenSide": "end"
+    }
+  ],
+  "modes": [
+    {
+      "id": "balanced",
+      "label": "Balanced",
+      "columns": [
+        {
+          "id": "contact",
+          "component": "contact",
+          "width": "28%",
+          "visible": true,
+          "collapsible": true,
+          "reopenLabel": "Contact Details",
+          "reopenSide": "start"
+        },
+        { "id": "conversations", "component": "conversations", "width": "44%", "visible": true },
+        {
+          "id": "notes",
+          "component": "notes",
+          "width": "28%",
+          "visible": true,
+          "collapsible": true,
+          "reopenLabel": "Notes",
+          "reopenSide": "end"
+        }
+      ]
+    },
+    {
+      "id": "conversation",
+      "label": "Conversation",
+      "columns": [
+        {
+          "id": "contact",
+          "component": "contact",
+          "width": "28%",
+          "visible": false,
+          "collapsible": true,
+          "reopenLabel": "Contact Details",
+          "reopenSide": "start"
+        },
+        { "id": "conversations", "component": "conversations", "width": "100%", "visible": true },
+        {
+          "id": "notes",
+          "component": "notes",
+          "width": "28%",
+          "visible": false,
+          "collapsible": true,
+          "reopenLabel": "Notes",
+          "reopenSide": "end"
+        }
+      ]
+    }
   ],
   "utilitySidebar": {
     "visible": true,

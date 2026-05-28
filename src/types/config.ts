@@ -14,13 +14,23 @@ export type ContactFieldValue = string | string[];
 
 export interface LayoutColumn {
   id: string;
-  component: 'contact' | 'conversations' | 'notes';
+  component: string;
   width: string;
   visible: boolean;
+  collapsible?: boolean;
+  reopenLabel?: string;
+  reopenSide?: 'start' | 'end';
+}
+
+export interface LayoutModeConfig {
+  id: string;
+  label: string;
+  columns: LayoutColumn[];
 }
 
 export interface PageLayoutConfig {
   columns: LayoutColumn[];
+  modes?: LayoutModeConfig[];
   utilitySidebar: {
     visible: boolean;
     activeIconId?: string;

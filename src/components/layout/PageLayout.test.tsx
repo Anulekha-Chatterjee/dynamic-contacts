@@ -2,6 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it } from 'vitest';
 import { config } from '../../config/loadConfig';
+import type { AppConfig } from '../../types/config';
 import { PageLayout } from './PageLayout';
 
 describe('PageLayout', () => {
@@ -50,5 +51,33 @@ describe('PageLayout', () => {
     );
     expect(screen.queryByText('Contact Details')).not.toBeInTheDocument();
     expect(screen.queryByText('Notes')).not.toBeInTheDocument();
+  });
+
+  it('renders a fallback for unsupported configured panels', () => {
+    const customConfig: AppConfig = {
+      ...config,
+      layout: {
+        ...config.layout,
+        modes: [
+          {
+            id: 'custom',
+            label: 'Custom',
+            columns: [
+              {
+                id: 'unknown',
+                component: 'unknown-panel',
+                width: '100%',
+                visible: true,
+              },
+            ],
+          },
+        ],
+      },
+    };
+
+    render(<PageLayout config={customConfig} />);
+
+    expect(screen.getByText('Unsupported panel')).toBeInTheDocument();
+    expect(screen.getByText('unknown-panel')).toBeInTheDocument();
   });
 });

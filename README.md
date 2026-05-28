@@ -45,7 +45,7 @@ src/
 
 | File | Purpose |
 | --- | --- |
-| `src/data/layout.json` | Defines the three-column layout, column visibility, utility sidebar icons, and the default active sidebar item |
+| `src/data/layout.json` | Defines layout columns, collapsible panels, runtime layout modes, utility sidebar icons, and the default active sidebar item |
 | `src/data/contactFields.json` | Defines contact field folders, labels, field types, options, and folder actions |
 | `src/data/contactData.json` | Contains contact records, UUID-style contact IDs, owners, followers, tags, and field values |
 | `src/data/conversations.json` | Stores per-contact conversation threads under `byContactId` |
@@ -63,7 +63,7 @@ Contact IDs are UUID-style strings instead of name-based slugs, so multiple cont
 - First Name and Last Name render side by side in view and edit modes
 - Contact tags show two by default, expand to reveal more, and can be deleted
 - Contact pagination with previous/next controls
-- Runtime layout toggle between balanced and conversation-focused column configs
+- Runtime layout toggle between JSON-defined balanced and conversation-focus configs
 - Per-contact conversations and per-contact notes
 - Conversation composer for adding messages
 - Email reply flow with focused composer, reply context, and a WhatsApp-style reply preview link on sent replies
@@ -110,10 +110,12 @@ This keeps the app lightweight while still showing realistic CRM interactions on
 
 Desktop uses the configured multi-column layout from `layout.json`.
 
-The layout mode toggle can switch the desktop layout at runtime:
+The layout mode toggle switches between layout modes defined in `layout.json`:
 
 - `Balanced` uses the default JSON column widths
 - `Conversation` applies an alternate JSON-shaped layout that hides Contact Details and Notes, then expands Conversations to the full workspace
+
+`PageLayout` uses a small component registry to map known JSON component keys like `contact`, `conversations`, and `notes` to React panels. If an unsupported component key is provided, the app renders an explicit unsupported-panel fallback instead of failing silently.
 
 On tablet/mobile widths, panels stack vertically:
 
@@ -177,6 +179,20 @@ Hide a panel in `src/data/layout.json`:
   "component": "notes",
   "width": "28%",
   "visible": false
+}
+```
+
+Add or adjust a runtime layout mode:
+
+```json
+{
+  "id": "conversation",
+  "label": "Conversation",
+  "columns": [
+    { "id": "contact", "component": "contact", "width": "28%", "visible": false },
+    { "id": "conversations", "component": "conversations", "width": "100%", "visible": true },
+    { "id": "notes", "component": "notes", "width": "28%", "visible": false }
+  ]
 }
 ```
 
